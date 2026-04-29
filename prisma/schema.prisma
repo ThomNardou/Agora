@@ -25,10 +25,9 @@ model t_admin {
   updatedAt DateTime @updatedAt
 }
 
-model t_reader {
+model t_readers {
   reader_id Int @id @default(autoincrement())
   email String @unique
-  isActive Boolean @default(true)
   consentGiven Boolean @default(false)
   unsubscribeToken String @unique
   createdAt DateTime @default(now())
