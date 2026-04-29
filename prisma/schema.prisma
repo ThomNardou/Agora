@@ -13,3 +13,42 @@ datasource db {
   provider = "mysql"
 }
 
+model t_admin {
+  admin_id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model t_reader {
+  reader_id Int @id @default(autoincrement())
+  email String @unique
+  isActive Boolean @default(true)
+  consentGiven Boolean @default(false)
+  unsubscribeToken String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model t_newsLetters {
+  newsLetter_id Int @id @default(autoincrement())
+  name String
+  body String
+  sendAt DateTime
+  newsLetter_status_fk Int
+  newsLetter_status t_newsLetters_status @relation(fields: [newsLetter_status_fk], references: [status_id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model t_newsLetters_status {
+  status_id Int @id @default(autoincrement())
+  displayName String
+  status String
+  textColor String
+  backgroundColor String
+  newsLetters t_newsLetters[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
