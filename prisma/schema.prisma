@@ -4,19 +4,23 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-  output   = "../app/generated/prisma"
+  output        = "../generated/prisma"
 }
 
 datasource db {
   provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model t_admin {
   admin_id Int @id @default(autoincrement())
   email String @unique
+  name String
+  lastName String
   password String
+  sessions t_sessions[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -34,7 +38,7 @@ model t_reader {
 model t_newsLetters {
   newsLetter_id Int @id @default(autoincrement())
   name String
-  body String
+  body String @db.LongText
   sendAt DateTime
   newsLetter_status_fk Int
   newsLetter_status t_newsLetters_status @relation(fields: [newsLetter_status_fk], references: [status_id])
@@ -51,4 +55,15 @@ model t_newsLetters_status {
   newsLetters t_newsLetters[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+model t_sessions {
+  session_id Int      @id @default(autoincrement())
+  admin_fk     Int
+  token      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       t_admin  @relation(fields: [admin_fk], references: [admin_id])
 }

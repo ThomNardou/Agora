@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "../../../generated/prisma/client";
+import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-const prisma = new PrismaClient();
 
 interface UserConnected {
     id: number;

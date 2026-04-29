@@ -4,8 +4,7 @@ services:
     container_name: mariadb
     restart: unless-stopped
     env_file:
-      - path: './.env'
-        required: true
+      - .env
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MARIADB_DATABASE: ${DB_DATABASE}
@@ -19,7 +18,7 @@ services:
       - mariadb_data:/var/lib/mysql
 
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
