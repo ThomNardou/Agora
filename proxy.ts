@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-    /*const cookie = request.cookies.get("session");
+    const cookie = request.cookies.get("session");
 
     if (!cookie) {
         return NextResponse.redirect(new URL("/login", request.url));
@@ -20,7 +20,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    return NextResponse.next();*/
+    return NextResponse.next();
 }
 
 export const config = {

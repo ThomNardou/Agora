@@ -28,8 +28,8 @@ export async function GET() {
     }
 
     const session = await prisma.t_sessions.findFirst({
-        where: { fkUser: sessionJson.userId },
-        include: { user: true },
+        where: { admin_fk: sessionJson.userId },
+        include: { admin: true },
     });
 
     if (!session || new Date(session.expiresAt) < new Date()) {
@@ -50,20 +50,20 @@ export async function GET() {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const user = session.user;
+    const admin = session.admin;
 
-    if (!user) {
-        console.log("User not found for session");
+    if (!admin) {
+        console.log("Admin not found for session");
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     return NextResponse.json(
         {
             message: "Authorized",
-            user: {
-                id: user.idUser,
-                name: user.name,
-                email: user.email,
+            admin: {
+                id: admin.admin_id,
+                name: admin.name,
+                email: admin.email,
             } satisfies UserConnected,
         },
         { status: 200 },
@@ -81,18 +81,18 @@ export async function POST(request: Request) {
             );
         }
 
-        const user = await prisma.t_users.findUnique({
+        const admin = await prisma.t_admin.findUnique({
             where: { email },
         });
 
-        if (!user) {
+        if (!admin) {
             return NextResponse.json(
                 { message: "Invalid email or password" },
                 { status: 401 },
             );
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, admin.password);
 
         if (!isMatch) {
             return NextResponse.json(
@@ -122,23 +122,23 @@ export async function POST(request: Request) {
             );
         }
 
-        const token = jwt.sign({ userId: user.idUser }, secretKey, {
+        const token = jwt.sign({ userId: admin.admin_id }, secretKey, {
             expiresIn,
         });
 
         const expiresAt = new Date(Date.now() + expiresIn * 1000);
         const tokenHash = bcrypt.hashSync(token, 10);
 
-        await prisma.t_sessions.deleteMany({ where: { fkUser: user.idUser } });
+        await prisma.t_sessions.deleteMany({ where: { admin_fk: admin.admin_id } });
         await prisma.t_sessions.create({
             data: {
                 token: tokenHash,
                 expiresAt: expiresAt,
-                user: { connect: { idUser: user.idUser } },
+                admin: { connect: { admin_id: admin.admin_id } },
             },
         });
 
-        const cookieValue = JSON.stringify({ userId: user.idUser, token });
+        const cookieValue = JSON.stringify({ userId: admin.admin_id, token });
 
         (await cookies()).set({
             name: "session",

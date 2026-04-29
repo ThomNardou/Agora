@@ -65,5 +65,5 @@ model t_sessions {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  user       t_admin  @relation(fields: [admin_fk], references: [admin_id])
+  admin       t_admin  @relation(fields: [admin_fk], references: [admin_id])
 }
