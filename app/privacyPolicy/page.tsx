@@ -42,7 +42,7 @@ export default function PrivacyPolicy() {
               <tr>
                 <td className="border border-gray-200 px-4 py-2">Token de désinscription</td>
                 <td className="border border-gray-200 px-4 py-2 text-orange-600 font-medium">Sensible</td>
-                <td className="border border-gray-200 px-4 py-2">Token unique généré cryptographiquement, usage unique, invalidé après utilisation</td>
+                <td className="border border-gray-200 px-4 py-2">Token unique généré et crypté, usage unique, invalidé après utilisation</td>
               </tr>
               <tr className="bg-gray-50">
                 <td className="border border-gray-200 px-4 py-2">Données de tracking (ouvertures, clics)</td>
@@ -115,9 +115,11 @@ export default function PrivacyPolicy() {
         <h2 className="text-xl font-semibold mb-3">6. Durée de conservation</h2>
         <p className="text-gray-700 leading-relaxed">
           Vos données sont conservées tant que votre abonnement est actif. À la suite d'une
-          désinscription, votre adresse e-mail et les données associées sont supprimées dans un
-          délai de <strong>30 jours</strong>, à l'exception des données de traçabilité du
-          consentement qui peuvent être conservées jusqu'à 3 ans à des fins de conformité légale.
+          désinscription, votre adresse e-mail est <strong>anonymisée</strong> dans un délai de{" "}
+          <strong>30 jours</strong> : elle est remplacée par un identifiant non réidentifiable,
+          de sorte qu'aucune donnée ne puisse vous être rattachée. Les données statistiques et de
+          traçabilité du consentement, désormais anonymisées, peuvent être conservées
+          indéfiniment à des fins d'analyse et de conformité légale.
         </p>
       </section>
 

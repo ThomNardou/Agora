@@ -8,7 +8,7 @@ async function main() {
   await prisma.t_sessions.deleteMany();
   await prisma.t_newsLetters.deleteMany();
   await prisma.t_newsLetters_status.deleteMany();
-  await prisma.t_reader.deleteMany();
+  await prisma.t_readers.deleteMany();
   await prisma.t_admin.deleteMany();
 
   // ===== CRÉER LES STATUTS =====
@@ -80,7 +80,7 @@ async function main() {
     data: {
       token: sessionTokenHash,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      user: { connect: { admin_id: createdAdmins[0].admin_id } },
+      admin: { connect: { admin_id: createdAdmins[0].admin_id } },
     },
   });
   console.log("✅ 1 session created\n");
@@ -90,38 +90,33 @@ async function main() {
   const readers = [
     {
       email: "jean.dupont@example.com",
-      isActive: true,
       consentGiven: true,
       unsubscribeToken: "token_jean_dupont_123abc",
     },
     {
       email: "marie.martin@example.com",
-      isActive: true,
       consentGiven: true,
       unsubscribeToken: "token_marie_martin_456def",
     },
     {
       email: "pierre.bernard@example.com",
-      isActive: true,
       consentGiven: false,
       unsubscribeToken: "token_pierre_bernard_789ghi",
     },
     {
       email: "claire.rousseau@example.com",
-      isActive: false,
       consentGiven: true,
       unsubscribeToken: "token_claire_rousseau_012jkl",
     },
     {
       email: "thomas.lefebvre@example.com",
-      isActive: true,
       consentGiven: true,
       unsubscribeToken: "token_thomas_lefebvre_345mno",
     },
   ];
 
   const createdReaders = await Promise.all(
-    readers.map((reader) => prisma.t_reader.create({ data: reader }))
+    readers.map((reader) => prisma.t_readers.create({ data: reader }))
   );
   console.log(`✅ ${createdReaders.length} readers created\n`);
 

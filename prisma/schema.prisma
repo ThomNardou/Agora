@@ -29,6 +29,7 @@ model t_readers {
   reader_id Int @id @default(autoincrement())
   email String @unique
   consentGiven Boolean @default(false)
+  consentGivenAt DateTime?
   unsubscribeToken String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
