@@ -1,24 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Logo from "@/app/components/logo";
 import Link from "next/link";
+import { Button } from "@mui/joy";
 
-type Status = "loading" | "success" | "error" | "missing";
+type Status = "idle" | "loading" | "success" | "error" | "missing";
 
 export default function UnsubscribePage() {
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
-    const [status, setStatus] = useState<Status>("loading");
+    const [status, setStatus] = useState<Status>(token ? "idle" : "missing");
     const [message, setMessage] = useState("");
 
-    useEffect(() => {
-        if (!token) {
-            setStatus("missing");
-            return;
-        }
-
+    function handleUnsubscribe() {
+        setStatus("loading");
         fetch("/api/newsletters/unsubscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -33,53 +30,75 @@ export default function UnsubscribePage() {
                 setMessage("Une erreur est survenue. Veuillez réessayer.");
                 setStatus("error");
             });
-    }, [token]);
+    }
 
     return (
         <div className="w-full h-screen content-center">
-            <div className="w-1/4 aspect-square mx-auto shadow-lg rounded-lg border border-gray-200 flex items-center justify-center flex-col gap-4 p-10">
-                <Logo size={64} />
-                <h1 className="text-2xl font-bold">Agora</h1>
+            <div className="w-1/4 aspect-square mx-auto shadow-lg rounded-lg border border-gray-200">
+                <div className="w-full flex items-center justify-center flex-col gap-2 mt-5">
+                    <Logo size={64} />
+                    <h1 className="text-2xl font-bold">Agora</h1>
+                    <h2 className="text-gray-500 text-2xl">
+                        {status === "success" ? "Désinscription réussie" : "Se désabonner"}
+                    </h2>
+                </div>
 
-                {status === "loading" && (
-                    <p className="text-gray-500 text-sm text-center">Traitement en cours…</p>
-                )}
+                <div className="w-full px-10 mt-5 flex flex-col gap-4">
+                    {status === "idle" && (
+                        <>
+                            <p className="text-[13px] text-center text-gray-700">
+                                Une fois que vous aurez cliqué sur “Se désabonner”, vous ne recevrez plus nos newsletters.
 
-                {status === "success" && (
-                    <>
-                        <h2 className="text-xl font-semibold text-green-600">Désinscription réussie</h2>
-                        <p className="text-sm text-center text-gray-700">{message}</p>
-                        <p className="text-sm text-center text-gray-500 w-4/6">
-                            Vous ne recevrez plus de newsletters d'Agora. Vos données seront supprimées dans un délai de 30 jours conformément à notre{" "}
-                            <Link href="/privacyPolicy" className="text-blue-500 hover:underline">
-                                politique de confidentialité
-                            </Link>.
-                        </p>
-                    </>
-                )}
+                                <br />
+                                <br />
+                                Si vous souhaitez vous réabonner ultérieurement, il vous suffira de vous inscrire à nouveau via notre formulaire d’abonnement.
+                            </p>
+                            <Button
+                                fullWidth
+                                sx={{ height: "40px" }}
+                                onClick={handleUnsubscribe}
+                            >
+                                Se désabonner
+                            </Button>
+                        </>
+                    )}
 
-                {status === "error" && (
-                    <>
-                        <h2 className="text-xl font-semibold text-red-600">Lien invalide</h2>
-                        <p className="text-sm text-center text-gray-700">{message}</p>
-                        <p className="text-sm text-center text-gray-500">
-                            Ce lien a peut-être déjà été utilisé ou a expiré.
-                        </p>
-                    </>
-                )}
+                    {status === "loading" && (
+                        <p className="text-gray-500 text-sm text-center">Traitement en cours…</p>
+                    )}
 
-                {status === "missing" && (
-                    <>
-                        <h2 className="text-xl font-semibold text-red-600">Token manquant</h2>
-                        <p className="text-sm text-center text-gray-500">
-                            Aucun token de désinscription trouvé. Veuillez utiliser le lien présent dans l'email reçu.
-                        </p>
-                    </>
-                )}
+                    {status === "success" && (
+                        <>
+                            <p className="text-[13px] text-center text-gray-700">{message}</p>
+                            <p className="text-[13px] text-center text-gray-500">
+                                Vous ne recevrez plus de newsletters d'Agora. Vos données seront anonymisées dans un délai de 30 jours conformément à notre{" "}
+                                <Link href="/privacyPolicy" className="text-blue-500 hover:underline">
+                                    politique de confidentialité
+                                </Link>.
+                            </p>
+                        </>
+                    )}
 
-                <Link href="/" className="text-sm text-blue-500 hover:underline mt-2">
-                    ← Retour à l'accueil
-                </Link>
+                    {status === "error" && (
+                        <>
+                            <p className="text-[13px] text-center text-red-600 font-semibold">Lien invalide</p>
+                            <p className="text-[13px] text-center text-gray-700">{message}</p>
+                            <p className="text-[13px] text-center text-gray-500">
+                                Ce lien a peut-être déjà été utilisé ou a expiré.
+                            </p>
+                        </>
+                    )}
+
+                    {status === "missing" && (
+                        <>
+                            <p className="text-[13px] text-center text-red-600 font-semibold">Token manquant</p>
+                            <p className="text-[13px] text-center text-gray-500">
+                                Aucun token de désinscription trouvé. Veuillez utiliser le lien présent dans l'email reçu.
+                            </p>
+                        </>
+                    )}
+
+                </div>
             </div>
         </div>
     );
