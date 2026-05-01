@@ -14,7 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model t_admin {
+model t_admins {
   admin_id Int @id @default(autoincrement())
   email String @unique
   name String
@@ -30,7 +30,8 @@ model t_readers {
   email String @unique
   consentGiven Boolean @default(false)
   consentGivenAt DateTime?
-  unsubscribeToken String @unique
+  unsubscribeToken String? @unique
+  newsLetter_readers t_newsLetters_readers[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -42,6 +43,7 @@ model t_newsLetters {
   sendAt DateTime
   newsLetter_status_fk Int
   newsLetter_status t_newsLetters_status @relation(fields: [newsLetter_status_fk], references: [status_id])
+  newsLetter_readers t_newsLetters_readers[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -57,13 +59,21 @@ model t_newsLetters_status {
   updatedAt DateTime @updatedAt
 }
 
+model t_newsLetters_readers {
+  newsLetter_fk Int
+  reader_fk Int
+  sentAt DateTime?
+  newsLetter t_newsLetters @relation(fields: [newsLetter_fk], references: [newsLetter_id])
+  reader t_readers @relation(fields: [reader_fk], references: [reader_id])
+  @@id([newsLetter_fk, reader_fk])
+}
 
 model t_sessions {
   session_id Int      @id @default(autoincrement())
   admin_fk     Int
-  token      String
+  token      String @unique
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  admin       t_admin  @relation(fields: [admin_fk], references: [admin_id])
+  admin       t_admins  @relation(fields: [admin_fk], references: [admin_id])
 }

@@ -9,7 +9,7 @@ async function main() {
   await prisma.t_newsLetters.deleteMany();
   await prisma.t_newsLetters_status.deleteMany();
   await prisma.t_readers.deleteMany();
-  await prisma.t_admin.deleteMany();
+  await prisma.t_admins.deleteMany();
 
   // ===== CRÉER LES STATUTS =====
   console.log("📋 Creating newsletter statuses...");
@@ -69,7 +69,7 @@ async function main() {
   ];
 
   const createdAdmins = await Promise.all(
-    admins.map((admin) => prisma.t_admin.create({ data: admin }))
+    admins.map((admin) => prisma.t_admins.create({ data: admin }))
   );
   console.log(`✅ ${createdAdmins.length} admins created\n`);
 

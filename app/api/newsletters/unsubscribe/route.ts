@@ -30,7 +30,7 @@ export async function POST(request: Request) {
             data: {
                 email: "unsubscribed_" + randomBytes(16).toString("hex") + "@example.com",
                 consentGiven: false,
-                unsubscribeToken: randomBytes(32).toString("hex"),
+                unsubscribeToken: null,
             },
         });
 
