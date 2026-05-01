@@ -1,0 +1,94 @@
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
+
+export default interface HomeResponseData {
+    newsLettersThisWeek: number;
+    mailsOpened: number;
+    clickRate: number;
+    subscribedReaders: number;
+    unsubscribedReaders: number;
+    mailsError: number;
+    newsletters: {
+        id: number;
+        name: string;
+        sendAt: Date;
+        status: {
+            displayName: string;
+            textColor: string;
+            backgroundColor: string;
+            value: string;
+        };
+    }[];
+    readers: {
+        id: number;
+        email: string;
+        consentGiven: boolean;
+    }[];
+
+}
+
+export async function GET() {
+    const admin = JSON.parse(
+        (await cookies()).get("session")?.value || "{}",
+    ).adminId;
+
+    if (!admin) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const newsletters = await prisma.t_newsLetters.findMany({
+        include: {
+            newsLetter_status: true,
+        },
+    });
+
+    const readers = await prisma.t_readers.findMany();
+
+
+    const newsLettersThisWeek = newsletters.filter((n) => {
+        const sendAt = new Date(n.sendAt);
+        const now = new Date();
+        const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return sendAt >= oneWeekAgo && sendAt <= now;
+    }).length;
+
+    // TODO: Replace with real data when available
+    const mailsOpened = 5
+    // TODO: Replace with real data when available
+    const clickRate = 1000
+    const subscribedReaders = readers.filter(r => r.consentGiven).length;
+    const unsubscribedReaders = readers.filter(r => !r.consentGiven).length;
+    const mailsError = newsletters.filter(n => n.newsLetter_status.status === "FAILED").length;
+
+    const responseData: HomeResponseData = {
+        newsLettersThisWeek,
+        mailsOpened,
+        clickRate,
+        subscribedReaders,
+        unsubscribedReaders,
+        mailsError,
+        newsletters: newsletters.map(n => ({
+            id: n.newsLetter_id,
+            name: n.name,
+            sendAt: n.sendAt,
+            status: {
+                displayName: n.newsLetter_status.displayName,
+                textColor: n.newsLetter_status.textColor,
+                backgroundColor: n.newsLetter_status.backgroundColor,
+                value: n.newsLetter_status.status,
+            },
+        })),
+        readers: readers.map(r => ({
+            id: r.reader_id,
+            email: r.email,
+            consentGiven: r.consentGiven,
+        })),
+    };
+
+    return NextResponse.json(responseData);
+
+
+}
+
+

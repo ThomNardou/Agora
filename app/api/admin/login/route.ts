@@ -44,7 +44,7 @@ export async function GET() {
     }
 
     try {
-        jwt.verify(sessionJson.token, process.env.TOKEN_SECRET_KEY || "");
+        jwt.verify(sessionJson.token, process.env.JWT_SECRET || "");
     } catch {
         console.log("Invalid JWT token");
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const admin = await prisma.t_admin.findUnique({
+        const admin = await prisma.t_admins.findUnique({
             where: { email },
         });
 
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const secretKey = process.env.TOKEN_SECRET_KEY;
+        const secretKey = process.env.JWT_SECRET;
         const expirationTime = process.env.JWT_EXPIRATION_TIME;
 
         if (!secretKey || !expirationTime) {
@@ -138,7 +138,7 @@ export async function POST(request: Request) {
             },
         });
 
-        const cookieValue = JSON.stringify({ userId: admin.admin_id, token });
+        const cookieValue = JSON.stringify({ adminId: admin.admin_id, token });
 
         (await cookies()).set({
             name: "session",

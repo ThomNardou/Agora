@@ -6,7 +6,7 @@ export async function proxy(request: NextRequest) {
     const cookie = request.cookies.get("session");
 
     if (!cookie) {
-        return NextResponse.redirect(new URL("/admin", request.url));
+        return NextResponse.redirect(new URL("/login", request.url));
     }
 
     const response = await fetch(
@@ -17,7 +17,7 @@ export async function proxy(request: NextRequest) {
     );
 
     if (!response.ok) {
-        return NextResponse.redirect(new URL("/admin", request.url));
+        return NextResponse.redirect(new URL("/login", request.url));
     }
 
     return NextResponse.next();
