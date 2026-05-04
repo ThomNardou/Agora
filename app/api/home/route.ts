@@ -54,8 +54,7 @@ export async function GET() {
     }).length;
 
     const mailsOpened = await prisma.t_emails_opened.count();
-    // TODO: Replace with real data when available
-    const clickRate = 1000
+    const clickRate = await prisma.t_emails_clicked.count();
     const subscribedReaders = readers.filter(r => r.consentGiven).length;
     const unsubscribedReaders = readers.filter(r => !r.consentGiven).length;
     const mailsError = newsletters.filter(n => n.newsLetter_status.status === "FAILED").length;

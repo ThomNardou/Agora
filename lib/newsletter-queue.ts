@@ -3,6 +3,10 @@ import prisma from "./prisma";
 import EmailHeader from "@/app/components/EmailHeader";
 import EmailFooter from "@/app/components/EmailFooter";
 
+marked.setOptions({
+    breaks: true,
+});
+
 const BATCH_SIZE = parseInt(process.env.NEWSLETTER_BATCH_SIZE ?? "20", 10);
 const INTERVAL_MS = parseInt(process.env.NEWSLETTER_INTERVAL_MS ?? "60000", 10);
 const MAX_FAILURES = parseInt(process.env.NEWSLETTER_MAX_FAILURES ?? "5", 10);
@@ -77,11 +81,30 @@ async function processBatch() {
     // Envoie les newsletters en parallèle
     const res = await Promise.allSettled(
         unsent.map(async (entry) => {
+
+            const addTrackingUrlForClicks = (html: string) => {
+                const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+                const trackingUrl = `${appUrl}/api/newsletters/track/clicked`;
+
+                return html
+                    .replace(/href="([^"]+)"/g, (match, url) => {
+                        if (url.startsWith(trackingUrl)) return match;
+                        const encodedUrl = encodeURIComponent(url);
+                        return `href="${trackingUrl}?nlId=${entry.newsLetter_fk}&readerId=${entry.reader_fk}&url=${encodedUrl}"`;
+                    })
+                    .replace(/(?<![href="])https?:\/\/[^\s"<]+/g, (url) => {
+                        const encodedUrl = encodeURIComponent(url);
+                        return `<a href="${trackingUrl}?nlId=${entry.newsLetter_fk}&readerId=${entry.reader_fk}&url=${encodedUrl}">${url}</a>`;
+                    });
+            }
+
             const bodyHtml = await marked(entry.newsLetter.body);
+            const bodyWithClickTracking = addTrackingUrlForClicks(bodyHtml);
+
             await sendEmail(
                 entry.reader.email,
                 entry.newsLetter.name,
-                bodyHtml,
+                bodyWithClickTracking,
                 entry.reader.unsubscribeToken,
                 entry.reader.reader_id,
                 entry.newsLetter_fk

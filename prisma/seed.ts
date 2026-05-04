@@ -141,7 +141,7 @@ Agora est une plateforme moderne de gestion de newsletters.
 
 > "Agora nous a permis de doubler notre engagement!" - Un utilisateur heureux
 
-[Découvrir plus](https://agora.example.com)`,
+[Découvrir plus](https://www.etml.ch/)`,
       sendAt: new Date(now + 2 * min),
       newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
@@ -164,7 +164,7 @@ Rejoignez-nous le **15 mai** pour notre webinaire exclusif!
 \`\`\`
 Date: 15/05/2026
 Heure: 14h00
-Lien: https://agora.example.com/webinar
+Lien: https://www.etml.ch/
 \`\`\``,
       sendAt: new Date(now + 4 * min),
       newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
