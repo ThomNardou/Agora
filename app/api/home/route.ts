@@ -53,8 +53,7 @@ export async function GET() {
         return sendAt >= oneWeekAgo && sendAt <= now;
     }).length;
 
-    // TODO: Replace with real data when available
-    const mailsOpened = 5
+    const mailsOpened = await prisma.t_emails_opened.count();
     // TODO: Replace with real data when available
     const clickRate = 1000
     const subscribedReaders = readers.filter(r => r.consentGiven).length;

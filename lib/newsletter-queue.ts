@@ -82,7 +82,9 @@ async function processBatch() {
                 entry.reader.email,
                 entry.newsLetter.name,
                 bodyHtml,
-                entry.reader.unsubscribeToken
+                entry.reader.unsubscribeToken,
+                entry.reader.reader_id,
+                entry.newsLetter_fk
             );
             await prisma.t_newsLetters_readers.update({
                 where: {
@@ -145,7 +147,9 @@ async function sendEmail(
     to: string,
     subject: string,
     bodyHtml: string,
-    unsubscribeToken: string | null
+    unsubscribeToken: string | null,
+    readerId: number,
+    nlId: number
 ) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
     const unsubscribeUrl = unsubscribeToken
@@ -169,7 +173,7 @@ async function sendEmail(
             </p>
           </td>
         </tr>
-        ${EmailFooter(unsubscribeUrl, appUrl)}
+        ${EmailFooter(unsubscribeUrl, appUrl, nlId, readerId)}
       </table>
     </td></tr>
   </table>
