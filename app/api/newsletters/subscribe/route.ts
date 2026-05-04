@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import prisma from "@/lib/prisma";
+import EmailHeader from "@/app/components/EmailHeader";
+import EmailFooter from "@/app/components/EmailFooter";
 
 export async function POST(request: Request) {
     try {
@@ -55,23 +57,13 @@ export async function POST(request: Request) {
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;padding:40px 0;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-
-        <!-- Header -->
-        <tr>
-          <td style="background:#1547E6;padding:36px 48px;text-align:center;">
-            <p style="margin:0;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">Agora</p>
-            <p style="margin:6px 0 0;font-size:13px;color:#a1a1aa;letter-spacing:0.5px;text-transform:uppercase;">Newsletter</p>
-          </td>
-        </tr>
-
-        <!-- Body -->
+        ${EmailHeader()}
         <tr>
           <td style="padding:48px;">
             <p style="margin:0 0 8px;font-size:22px;font-weight:600;color:#18181b;">Bienvenue dans l'Agora 👋</p>
             <p style="margin:0 0 24px;font-size:15px;color:#52525b;line-height:1.6;">
               Votre abonnement est confirmé. Vous recevrez désormais nos prochaines actualités, analyses et mises à jour directement dans votre boîte mail.
             </p>
-
             <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;border-radius:8px;margin-bottom:32px;">
               <tr>
                 <td style="padding:24px 28px;">
@@ -82,31 +74,13 @@ export async function POST(request: Request) {
                 </td>
               </tr>
             </table>
-
             <p style="margin:0;font-size:14px;color:#71717a;line-height:1.6;">
               À très bientôt,<br>
               <strong style="color:#18181b;">L'équipe Agora</strong>
             </p>
           </td>
         </tr>
-
-        <!-- Divider -->
-        <tr><td style="padding:0 48px;"><hr style="border:none;border-top:1px solid #e4e4e7;margin:0;"></td></tr>
-
-        <!-- Footer -->
-        <tr>
-          <td style="padding:24px 48px;text-align:center;">
-            <p style="margin:0 0 8px;font-size:12px;color:#a1a1aa;line-height:1.6;">
-              Vous recevez cet email car vous vous êtes abonné à la newsletter d'Agora.
-            </p>
-            <p style="margin:0;font-size:12px;color:#a1a1aa;">
-              <a href="${unsubscribeUrl}" style="color:#71717a;text-decoration:underline;">Me désabonner</a>
-              &nbsp;·&nbsp;
-              <a href="${appUrl}/privacyPolicy" style="color:#71717a;text-decoration:underline;">Politique de confidentialité</a>
-            </p>
-          </td>
-        </tr>
-
+        ${EmailFooter(unsubscribeUrl, appUrl)}
       </table>
     </td></tr>
   </table>

@@ -99,8 +99,8 @@ async function main() {
       unsubscribeToken: "token_marie_martin_456def",
     },
     {
-      email: "pierre.bernard@example.com",
-      consentGiven: false,
+      email: "thomas.nardou@eduvaud.ch",
+      consentGiven: true,
       unsubscribeToken: "token_pierre_bernard_789ghi",
     },
     {
@@ -122,6 +122,8 @@ async function main() {
 
   // ===== CRÉER LES NEWSLETTERS =====
   console.log("📰 Creating newsletters...");
+  const now = Date.now();
+  const min = 60 * 1000; // 1 minute in milliseconds
   const newsletters = [
     {
       name: "Bienvenue dans Agora",
@@ -129,7 +131,7 @@ async function main() {
 
 ## Découvrez notre plateforme
 
-Agora est une plateforme moderne de gestion de newsletters. 
+Agora est une plateforme moderne de gestion de newsletters.
 
 ### Fonctionnalités principales
 
@@ -140,8 +142,8 @@ Agora est une plateforme moderne de gestion de newsletters.
 > "Agora nous a permis de doubler notre engagement!" - Un utilisateur heureux
 
 [Découvrir plus](https://agora.example.com)`,
-      sendAt: new Date("2026-05-15T10:00:00Z"),
-      newsLetter_status_fk: createdStatuses[2].status_id, // En cours
+      sendAt: new Date(now + 2 * min),
+      newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
     {
       name: "Actualités du mois d'avril",
@@ -164,8 +166,8 @@ Date: 15/05/2026
 Heure: 14h00
 Lien: https://agora.example.com/webinar
 \`\`\``,
-      sendAt: new Date("2026-04-30T09:00:00Z"),
-      newsLetter_status_fk: createdStatuses[3].status_id, // Terminée
+      sendAt: new Date(now + 4 * min),
+      newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
     {
       name: "Newsletter - Mai 2026",
@@ -188,7 +190,7 @@ Utilisez le code **MAI2026** pour profiter de 20% de réduction sur tous les pla
 ---
 
 *Dernière mise à jour: 29 avril 2026*`,
-      sendAt: new Date("2026-05-05T08:00:00Z"),
+      sendAt: new Date(now + 6 * min),
       newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
     {
@@ -202,8 +204,8 @@ Ceci est une newsletter en brouillon pour tester le système.
 - [ ] Ajouter les images
 - [ ] Vérifier les liens
 - [ ] Réviser le contenu`,
-      sendAt: new Date("2026-06-01T10:00:00Z"),
-      newsLetter_status_fk: createdStatuses[0].status_id, // Brouillon
+      sendAt: new Date(now + 8 * min),
+      newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
     {
       name: "Newsletter échouée - Juin",
@@ -214,8 +216,8 @@ Tentative d'envoi échouée. Veuillez vérifier les paramètres et réessayer.
 ## Contenu
 
 Ceci était destiné à être envoyé le 1er juin.`,
-      sendAt: new Date("2026-06-01T10:00:00Z"),
-      newsLetter_status_fk: createdStatuses[4].status_id, // Échouée
+      sendAt: new Date(now + 10 * min),
+      newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
   ];
 
@@ -223,6 +225,21 @@ Ceci était destiné à être envoyé le 1er juin.`,
     newsletters.map((newsletter) => prisma.t_newsLetters.create({ data: newsletter }))
   );
   console.log(`✅ ${createdNewsletters.length} newsletters created\n`);
+
+  // ===== ATTRIBUER LES LECTEURS AUX NEWSLETTERS =====
+  console.log("📧 Assigning readers to newsletters...");
+  const newsletterReaderAssignments = [];
+  for (const newsletter of createdNewsletters) {
+    for (const reader of createdReaders) {
+      newsletterReaderAssignments.push({
+        newsLetter_fk: newsletter.newsLetter_id,
+        reader_fk: reader.reader_id,
+        sentAt: null,
+      });
+    }
+  }
+  await prisma.t_newsLetters_readers.createMany({ data: newsletterReaderAssignments });
+  console.log(`✅ ${newsletterReaderAssignments.length} reader assignments created\n`);
 
   console.log("🎉 Seeding completed successfully!");
   console.log("\n📊 Summary:");
