@@ -44,10 +44,10 @@ export default function PrivacyPolicy() {
                 <td className="border border-gray-200 px-4 py-2 text-orange-600 font-medium">Sensible</td>
                 <td className="border border-gray-200 px-4 py-2">Token unique généré et crypté, usage unique, invalidé après utilisation</td>
               </tr>
-              <tr className="bg-gray-50">
-                <td className="border border-gray-200 px-4 py-2">Données de tracking (ouvertures, clics)</td>
+              <tr>
+                <td className="border border-gray-200 px-4 py-2">Données de tracking (ouvertures, clics, URLs)</td>
                 <td className="border border-gray-200 px-4 py-2 text-green-600 font-medium">Interne</td>
-                <td className="border border-gray-200 px-4 py-2">Agrégées et pseudonymisées, visibles uniquement des administrateurs</td>
+                <td className="border border-gray-200 px-4 py-2">Non-anonymisées, accessibles aux admins</td>
               </tr>
               <tr>
                 <td className="border border-gray-200 px-4 py-2">Statut d'abonnement (actif / inactif)</td>

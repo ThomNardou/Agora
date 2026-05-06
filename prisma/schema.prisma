@@ -32,8 +32,6 @@ model t_readers {
   consentGivenAt DateTime?
   unsubscribeToken String? @unique
   newsLetter_readers t_newsLetters_readers[]
-  emails_opened t_emails_opened[]
-  emails_clicked t_emails_clicked[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -85,17 +83,13 @@ model t_sessions {
 model t_emails_opened {
   email_opened_id Int @id @default(autoincrement())
   newsLetter_fk Int
-  reader_fk Int
   openedAt DateTime @default(now())
   newsLetter t_newsLetters @relation(fields: [newsLetter_fk], references: [newsLetter_id])
-  reader t_readers @relation(fields: [reader_fk], references: [reader_id])
 }
 
 model t_emails_clicked {
   email_clicked_id Int @id @default(autoincrement())
   newsLetter_fk Int
-  reader_fk Int
   clickedAt DateTime @default(now())
   newsLetter t_newsLetters @relation(fields: [newsLetter_fk], references: [newsLetter_id])
-  reader t_readers @relation(fields: [reader_fk], references: [reader_id])
 }

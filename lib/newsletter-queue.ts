@@ -90,11 +90,11 @@ async function processBatch() {
                     .replace(/href="([^"]+)"/g, (match, url) => {
                         if (url.startsWith(trackingUrl)) return match;
                         const encodedUrl = encodeURIComponent(url);
-                        return `href="${trackingUrl}?nlId=${entry.newsLetter_fk}&readerId=${entry.reader_fk}&url=${encodedUrl}"`;
+                        return `href="${trackingUrl}?nlId=${entry.newsLetter_fk}&url=${encodedUrl}"`;
                     })
                     .replace(/(?<![href="])https?:\/\/[^\s"<]+/g, (url) => {
                         const encodedUrl = encodeURIComponent(url);
-                        return `<a href="${trackingUrl}?nlId=${entry.newsLetter_fk}&readerId=${entry.reader_fk}&url=${encodedUrl}">${url}</a>`;
+                        return `<a href="${trackingUrl}?nlId=${entry.newsLetter_fk}&url=${encodedUrl}">${url}</a>`;
                     });
             }
 
@@ -196,7 +196,7 @@ async function sendEmail(
             </p>
           </td>
         </tr>
-        ${EmailFooter(unsubscribeUrl, appUrl, nlId, readerId)}
+        ${EmailFooter(unsubscribeUrl, appUrl, nlId)}
       </table>
     </td></tr>
   </table>

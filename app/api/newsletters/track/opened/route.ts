@@ -14,15 +14,14 @@ export async function GET(request: Request) {
             });
         }
 
-        const [newsletterId, readerId] = Buffer.from(trackId, "base64").toString("utf-8")
-            .split(":");
+        const newsletterId = Buffer.from(trackId, "base64").toString("utf-8")
 
         await prisma.t_emails_opened.create({
             data: {
-                newsLetter: { connect: { newsLetter_id: parseInt(newsletterId) } },
-                reader: { connect: { reader_id: parseInt(readerId) } },
-            },
+                newsLetter_fk: parseInt(newsletterId)
+            }
         });
+
 
         return new NextResponse(GIF, {
             headers: { "Content-Type": "image/gif" },
