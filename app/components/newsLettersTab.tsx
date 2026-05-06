@@ -3,6 +3,8 @@ import HomeResponseData from "../api/home/route";
 import { MdSearch } from "react-icons/md";
 import Link from "next/link";
 import { LuPen } from "react-icons/lu";
+import { IoEyeOutline } from "react-icons/io5";
+
 
 
 export default function NewsLettersTab({ newsletters }: { newsletters: HomeResponseData["newsletters"] }) {
@@ -56,6 +58,10 @@ export default function NewsLettersTab({ newsletters }: { newsletters: HomeRespo
                                 </td>
                                 <td>
                                     <div className="flex items-center gap-2">
+                                        <Link href={`/newsletter/${newsletter.id}`} 
+                                            className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
+                                            <IoEyeOutline size={20} />
+                                        </Link>
                                         {
                                             newsletter.status.value === "DRAFT" && (
                                                 <Link
