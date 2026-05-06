@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         if (!admin) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
-        const { id, name, body, sendAt, status } = await request.json();
+        const { id, name, body, sendAt, status, readerIds } = await request.json();
 
         if (!name) {
             return NextResponse.json({ message: "Name is required" }, { status: 400 });
@@ -37,10 +37,12 @@ export async function POST(request: Request) {
             if (!sendAt) {
                 return NextResponse.json({ message: "sendAt is required for scheduled newsletters" }, { status: 400 });
             }
+
             sendAtDate = new Date(sendAt);
         }
 
-        console.log("Creating newsletter with data:", { name, body, sendAt: sendAtDate, status });
+        let newsletterId: number;
+        let newNLstatus: "update" | "create";
 
         if (id) {
             await prisma.t_newsLetters.update({
@@ -53,9 +55,11 @@ export async function POST(request: Request) {
                 }
             });
 
-            return NextResponse.json({ message: "Newsletter updated successfully" });
+            newsletterId = id;
+            newNLstatus = "update"
+
         } else {
-            await prisma.t_newsLetters.create({
+            const newsletter = await prisma.t_newsLetters.create({
                 data: {
                     name,
                     body,
@@ -64,8 +68,25 @@ export async function POST(request: Request) {
                 }
             });
 
-            return NextResponse.json({ message: "Newsletter created successfully" });
+            newsletterId = newsletter.newsLetter_id;
+            newNLstatus = "create"
+
         }
+
+
+        if (readerIds && Array.isArray(readerIds)) {
+            const connectReaders = readerIds.map((readerId: number) => ({
+                reader_fk: readerId,
+                newsLetter_fk: id,
+            }));
+            await prisma.t_newsLetters_readers.createMany({
+                data: connectReaders,
+                skipDuplicates: true,
+            });
+        }
+
+        return NextResponse.json({ message: `Newsletter ${newNLstatus}d successfully`, newsletterId }, { status: 200 });
+
     } catch (error) {
         console.error("Error creating newsletter:", error);
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });

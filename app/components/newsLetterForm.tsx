@@ -1,9 +1,14 @@
 "use client";
 
-import { Input, Button, Alert } from "@mui/joy";
+import { Input, Button, Alert, Modal, ModalDialog, ModalClose, Typography, Table, Checkbox } from "@mui/joy";
 import { LuPen } from "react-icons/lu";
 import { HiOutlineFolderAdd } from "react-icons/hi";
 import { useState, useRef, useEffect } from "react";
+import { RxCross1 } from "react-icons/rx";
+import { IoCheckmarkOutline } from "react-icons/io5";
+import { MdSearch } from "react-icons/md";
+import { LuSend } from "react-icons/lu";
+
 
 export default function NewsLetterForm({ mode, title, newsletter }: {
     mode: "create" | "edit", title: string, newsletter?: {
@@ -16,12 +21,37 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
 
 
     const editorRef = useRef<HTMLTextAreaElement>(null);
+    const sendAttInputRef = useRef<HTMLInputElement>(null);
+
     const [markdownContent, setMarkdownContent] = useState("");
     const [name, setName] = useState("");
+    const [selectedReaders, setSelectedReaders] = useState<number[]>([]);
+    const [sendAt, setSendAt] = useState<string | null>(null);
+    const [openPlanModal, setOpenPlanModal] = useState(false);
+    const [openReaderModal, setOpenReaderModal] = useState(false);
+    const [readers, setReaders] = useState<{ reader_id: number; email: string, consentGiven: boolean }[]>([]);
+    const [nlStatus, setNLStatus] = useState<"DRAFT" | "IN_PROGRESS" | "SCHEDULED" | null>(null);
     const [feedback, setFeedback] = useState<{
         type: "success" | "error";
         message: string;
     } | null>(null);
+
+    useEffect(() => {
+        const fetchReaders = async () => {
+            try {
+                const response = await fetch("/api/readers/getAll");
+                if (response.ok) {
+                    const data = await response.json();
+                    setReaders(data.readers);
+                    setSelectedReaders(data.readers.filter((r: { consentGiven: boolean }) => r.consentGiven).map((r: { reader_id: number }) => r.reader_id));
+                }
+            } catch (error) {
+                console.error("Error fetching readers:", error);
+            }
+        };
+
+        fetchReaders();
+    }, []);
 
     useEffect(() => {
         if (newsletter) {
@@ -70,8 +100,108 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
         textarea.setSelectionRange(cursorPosition, cursorPosition);
     };
 
+
+    const onCloseReaderModal = () => {
+        setOpenReaderModal(false);
+        setSelectedReaders(readers.filter(r => r.consentGiven).map(r => r.reader_id));
+    }
     return (
         <>
+
+            {/* =============================== PLAN MODAL =============================== */}
+            <Modal open={openPlanModal} onClose={() => {setOpenPlanModal(false); if (sendAttInputRef.current) sendAttInputRef.current.value = ""; setSendAt(null);}}>
+                <ModalDialog>
+                    <ModalClose variant="plain" sx={{ m: 1 }} />
+                    <Typography sx={{ mb: 2 }}>Planifier l'envoi</Typography>
+                    <div className="flex flex-col gap-6 min-w-xl">
+                        <div>
+                            <label>
+                                Date d'envoi :
+                            </label>
+                            <Input slotProps={{ input: { ref: sendAttInputRef, min: new Date().toISOString().slice(0, 16) } }} fullWidth type="datetime-local" className=" border border-gray-300 rounded px-2 py-1" onChange={(e) => setSendAt(e.target.value)} />
+                        </div>
+                        <Button disabled={!sendAt || sendAt < new Date().toISOString().slice(0, 16)} color="primary" sx={{ marginTop: '30px' }} onClick={() => { setOpenReaderModal(true); setOpenPlanModal(false); }}>
+                            Planifier
+                        </Button>
+                    </div>
+                </ModalDialog>
+            </Modal>
+
+            {/* =============================== READER SELECTION MODAL =============================== */}
+            <Modal open={openReaderModal} onClose={onCloseReaderModal}>
+                <ModalDialog>
+                    <ModalClose variant="plain" sx={{ m: 1 }} />
+                    <Typography sx={{ mb: 2 }}>Envoyer à :</Typography>
+                    <div className="flex flex-col min-w-xl">
+                        <div className="w-full flex justify-end">
+                            <Input
+                                placeholder="Rechercher un lecteur..."
+                                startDecorator={<MdSearch size={20} />}
+                                sx={{ width: "300px", marginBottom: "20px" }}
+                                onInput={(e) => {
+                                    const value = (e.target as HTMLInputElement).value.toLowerCase();
+                                }}
+                            />
+                        </div>
+                        <Table sx={{ width: '100%' }}>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>N°</th>
+                                    <th>Email</th>
+                                    <th>Consentement</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {readers.map(reader => (
+                                    <tr key={reader.reader_id}>
+                                        <td>
+                                            <Checkbox size="sm" onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedReaders(prev => [...prev, reader.reader_id]);
+                                                } else {
+                                                    setSelectedReaders(prev => prev.filter(id => id !== reader.reader_id));
+                                                }
+                                            }} checked={selectedReaders.includes(reader.reader_id)} />
+                                        </td>
+                                        <td>{reader.reader_id}</td>
+                                        <td>{reader.email}</td>
+                                        <td>{reader.consentGiven ? (
+                                            <div className="w-5 flex justify-center items-center aspect-square rounded-full  mr-2 bg-green-500">
+                                                <IoCheckmarkOutline size={16} color="white" />
+                                            </div>
+                                        ) : (
+                                            <div className="w-5 flex justify-center items-center aspect-square rounded-full mr-2 bg-red-500">
+                                                <RxCross1 size={12} color="white" />
+                                            </div>
+                                        )}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                        <Button disabled={selectedReaders.length === 0} fullWidth color="primary" sx={{ marginTop: '30px' }} onClick={() => {
+                            fetch("/api/newsletters/save", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"                                },
+                                body: JSON.stringify({
+                                    id: newsletter?.id,
+                                    readerIds: selectedReaders,
+                                    status: nlStatus,
+                                    name,
+                                    body: markdownContent,
+                                    sendAt
+                                })
+                            });
+                            onCloseReaderModal();
+                            setSendAt(null);
+                        }}>
+                            Envoyer
+                        </Button>
+                    </div>
+                </ModalDialog>
+            </Modal>
+
             <div className="w-4/5 mx-auto">
                 <h1 className="text-2xl text-gray-500 mb-4">{title}</h1>
 
@@ -161,7 +291,7 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                     onChange={(e) => setMarkdownContent(e.target.value)}
                     className="w-full border border-gray-300 border-t-0 rounded-b-lg p-4 min-h-96 focus:outline-none focus:border-blue-500 bg-white focus:ring-2 focus:ring-blue-200 text-sm"
                 />
-                <div className="flex justify-start mt-4">
+                <div className="flex justify-start mt-4 gap-4">
                     <Button
                         color="neutral"
                         startDecorator={<HiOutlineFolderAdd size={20} />}
@@ -203,6 +333,22 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                         {
                             mode === "create" ? "Enregistrer comme brouillon" : "Enregistrer les modifications"
                         }
+                    </Button>
+                    <Button
+                        color="success"
+                        disabled={!name || !markdownContent}
+                        startDecorator={<LuPen size={20} />}
+                        onClick={() => {setOpenPlanModal(true); setNLStatus("SCHEDULED");}}
+                    >
+                        Planifier
+                    </Button>
+                    <Button
+                        color="primary"
+                        disabled={!name || !markdownContent}
+                        startDecorator={<LuSend size={20} />}
+                        onClick={() => {setOpenReaderModal(true); setSendAt(new Date().toISOString().slice(0, 16)); setNLStatus("IN_PROGRESS");}}
+                    >
+                        Envoyer
                     </Button>
                 </div>
 

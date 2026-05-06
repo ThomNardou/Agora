@@ -9,6 +9,12 @@ import { Input } from "@mui/joy";
 import { IoCodeSlash } from "react-icons/io5";
 import { CiPlay1 } from "react-icons/ci";
 
+marked.setOptions({
+    breaks: true,
+    gfm: true
+});
+
+
 
 
 
@@ -36,7 +42,6 @@ export default function NewsletterDetailsPage() {
                     });
 
                     const rawHtml = await marked(data.newsletter.body);
-                    console.log("Raw HTML:", rawHtml);
 
                     setHtmlContent(DOMPurify.sanitize(rawHtml));
 
@@ -76,7 +81,7 @@ export default function NewsletterDetailsPage() {
                 viewMode === "preview" ? (
                     <div
                         className="p-4 border border-gray-300 rounded-b-lg min-h-96 max-h-96 overflow-y-auto bg-gray-100 shadow-sm">
-                        <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="newsletter-content" />
+                        <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="newsletter-content prose prose-sm max-w-none" />
                     </div>
                 ) : (
                     <div className="p-4 border border-gray-300 rounded-b-lg min-h-96 max-h-96 overflow-y-auto bg-gray-100 shadow-sm whitespace-pre-wrap font-mono text-sm">
