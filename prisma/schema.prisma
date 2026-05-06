@@ -41,8 +41,8 @@ model t_readers {
 model t_newsLetters {
   newsLetter_id Int @id @default(autoincrement())
   name String
-  body String @db.LongText
-  sendAt DateTime
+  body String? @db.LongText
+  sendAt DateTime?
   newsLetter_status_fk Int
   newsLetter_status t_newsLetters_status @relation(fields: [newsLetter_status_fk], references: [status_id])
   newsLetter_readers t_newsLetters_readers[]

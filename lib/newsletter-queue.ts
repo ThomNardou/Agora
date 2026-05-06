@@ -37,7 +37,7 @@ async function processBatch() {
         where: {
             sentAt: null,
             newsLetter: {
-                sendAt: { lte: new Date() },
+                sendAt: { lte: new Date(), not: null },
                 newsLetter_status: {
                     status: { in: ["SCHEDULED", "IN_PROGRESS"] },
                 },
@@ -98,12 +98,12 @@ async function processBatch() {
                     });
             }
 
-            const bodyHtml = await marked(entry.newsLetter.body);
+            const bodyHtml = await marked(entry.newsLetter.body!);
             const bodyWithClickTracking = addTrackingUrlForClicks(bodyHtml);
 
             await sendEmail(
                 entry.reader.email,
-                entry.newsLetter.name,
+                entry.newsLetter.name!,
                 bodyWithClickTracking,
                 entry.reader.unsubscribeToken,
                 entry.reader.reader_id,

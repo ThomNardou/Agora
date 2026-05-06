@@ -39,7 +39,7 @@ export default function NewsLettersTab({ newsletters }: { newsletters: HomeRespo
                             <tr key={newsletter.id}>
                                 <td>{newsletter.id}</td>
                                 <td>{newsletter.name}</td>
-                                <td>{new Date(newsletter.sendAt).toLocaleDateString()} {new Date(newsletter.sendAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                                <td>{newsletter.sendAt != null ? (new Date(newsletter.sendAt).toLocaleDateString() + " " + new Date(newsletter.sendAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })) : "-"}</td>
                                 <td>
                                     <span
                                         className="px-2 py-1 rounded-full text-sm font-medium content-center"

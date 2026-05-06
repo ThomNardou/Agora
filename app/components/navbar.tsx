@@ -12,7 +12,7 @@ export default function Navbar() {
                 </Link>
             </div>
             <div className={"flex items-center gap-5"}>
-                <Link href={"/dashboard"} className={"bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors flex items-center"}>
+                <Link href={"/newsletter/create"} className={"bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors flex items-center"}>
                     <FaFolderPlus size={20} />
                     <span className={"ml-3"}>Campagne</span>
                 </Link>

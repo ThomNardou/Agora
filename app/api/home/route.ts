@@ -12,7 +12,7 @@ export default interface HomeResponseData {
     newsletters: {
         id: number;
         name: string;
-        sendAt: Date;
+        sendAt: Date | null;
         status: {
             displayName: string;
             textColor: string;
@@ -46,12 +46,12 @@ export async function GET() {
     const readers = await prisma.t_readers.findMany();
 
 
-    const newsLettersThisWeek = newsletters.filter((n) => {
-        const sendAt = new Date(n.sendAt);
+    const newsLettersThisWeek = newsletters.filter((n) => n.sendAt && (() => {
+        const sendAt = new Date(n.sendAt!);
         const now = new Date();
         const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         return sendAt >= oneWeekAgo && sendAt <= now;
-    }).length;
+    })).length;
 
     const mailsOpened = await prisma.t_emails_opened.count();
     const clickRate = await prisma.t_emails_clicked.count();
@@ -69,7 +69,7 @@ export async function GET() {
         newsletters: newsletters.map(n => ({
             id: n.newsLetter_id,
             name: n.name,
-            sendAt: n.sendAt,
+            sendAt: n.sendAt ? new Date(n.sendAt) : null,
             status: {
                 displayName: n.newsLetter_status.displayName,
                 textColor: n.newsLetter_status.textColor,
