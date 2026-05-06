@@ -1,16 +1,18 @@
 import { Table, Input } from "@mui/joy";
 import HomeResponseData from "../api/home/route";
 import { MdSearch } from "react-icons/md";
+import Link from "next/link";
+import { LuPen } from "react-icons/lu";
 
 
 export default function NewsLettersTab({ newsletters }: { newsletters: HomeResponseData["newsletters"] }) {
     return (
         <>
             <div className="w-full flex-col flex items-end">
-                <Input 
+                <Input
                     placeholder="Rechercher une newsletter..."
                     startDecorator={<MdSearch />}
-                    sx={{ width: "300px", marginBottom: "20px" }} 
+                    sx={{ width: "300px", marginBottom: "20px" }}
                     onInput={(e) => {
                         const value = (e.target as HTMLInputElement).value.toLowerCase();
                         const rows = document.querySelectorAll("tbody tr");
@@ -53,7 +55,18 @@ export default function NewsLettersTab({ newsletters }: { newsletters: HomeRespo
                                     </span>
                                 </td>
                                 <td>
-                                    <p>TODO</p>
+                                    <div className="flex items-center gap-2">
+                                        {
+                                            newsletter.status.value === "DRAFT" && (
+                                                <Link
+                                                    href={`/newsletter/edit/${newsletter.id}`}
+                                                    className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                                                >
+                                                    <LuPen size={25} />
+                                                </Link>
+                                            )
+                                        }
+                                    </div>
                                 </td>
                             </tr>
                         ))}

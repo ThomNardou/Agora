@@ -10,7 +10,7 @@ export default function CreateNewsletterPage() {
 
     return (
         <>
-            <NewsLetterForm mode="create" />
+            <NewsLetterForm mode="create" title="Créer une campagne" />
 
 
         </>

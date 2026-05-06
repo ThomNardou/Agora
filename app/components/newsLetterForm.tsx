@@ -3,14 +3,17 @@
 import { Input, Button, Alert } from "@mui/joy";
 import { LuPen } from "react-icons/lu";
 import { HiOutlineFolderAdd } from "react-icons/hi";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
-export default function NewsLetterForm({mode, newsletter}: {mode: "create" | "edit", newsletter?: {
-    id: number;
-    name: string;
-    body: string;
-    sendAt: string | null;
-}}) {
+export default function NewsLetterForm({ mode, title, newsletter }: {
+    mode: "create" | "edit", title: string, newsletter?: {
+        id: number;
+        name: string;
+        body: string;
+        sendAt: string | null;
+    }
+}) {
+
 
     const editorRef = useRef<HTMLTextAreaElement>(null);
     const [markdownContent, setMarkdownContent] = useState("");
@@ -20,6 +23,12 @@ export default function NewsLetterForm({mode, newsletter}: {mode: "create" | "ed
         message: string;
     } | null>(null);
 
+    useEffect(() => {
+        if (newsletter) {
+            setName(newsletter.name);
+            setMarkdownContent(newsletter.body);
+        }
+    }, [newsletter]);
 
     const applyTextFormat = (format: "bold" | "italic" | "underline" | "h1" | "h2" | "h3") => {
         if (!editorRef.current) return;
@@ -64,7 +73,7 @@ export default function NewsLetterForm({mode, newsletter}: {mode: "create" | "ed
     return (
         <>
             <div className="w-4/5 mx-auto">
-                <h1 className="text-2xl text-gray-500 mb-4">Créer une campagne</h1>
+                <h1 className="text-2xl text-gray-500 mb-4">{title}</h1>
 
                 {feedback && (
                     <div className={"w-full my-5"}>
@@ -81,6 +90,7 @@ export default function NewsLetterForm({mode, newsletter}: {mode: "create" | "ed
                 <Input placeholder="Nom" fullWidth startDecorator={
                     <LuPen size={20} />
                 }
+                    value={name || ""}
                     onChange={(e) => setName(e.target.value)}
                 />
 
@@ -147,7 +157,7 @@ export default function NewsLetterForm({mode, newsletter}: {mode: "create" | "ed
                 </div>
                 <textarea
                     ref={editorRef}
-                    value={markdownContent}
+                    value={markdownContent || ""}
                     onChange={(e) => setMarkdownContent(e.target.value)}
                     className="w-full border border-gray-300 border-t-0 rounded-b-lg p-4 min-h-96 focus:outline-none focus:border-blue-500 bg-white focus:ring-2 focus:ring-blue-200 text-sm"
                 />
