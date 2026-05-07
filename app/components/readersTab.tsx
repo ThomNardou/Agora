@@ -3,6 +3,7 @@ import HomeResponseData from "../api/home/route";
 import { RxCross1 } from "react-icons/rx";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { MdSearch } from "react-icons/md";
+import { MdDeleteOutline } from "react-icons/md";
 
 
 
@@ -10,10 +11,10 @@ export default function ReadersTab({ readers }: { readers: HomeResponseData["rea
     return (
         <>
             <div className="w-full flex-col flex items-end">
-                <Input 
+                <Input
                     placeholder="Rechercher un lecteur..."
                     startDecorator={<MdSearch />}
-                    sx={{ width: "300px", marginBottom: "20px" }} 
+                    sx={{ width: "300px", marginBottom: "20px" }}
                     onInput={(e) => {
                         const value = (e.target as HTMLInputElement).value.toLowerCase();
                         const rows = document.querySelectorAll("tbody tr");
@@ -40,7 +41,7 @@ export default function ReadersTab({ readers }: { readers: HomeResponseData["rea
                         {readers.map((reader) => (
                             <tr key={reader.id}>
                                 <td>{reader.id}</td>
-                                <td>{reader.email}</td>
+                                <td title={reader.email}>{reader.email.slice(0, 30)}{reader.email.length > 30 ? "..." : ""}</td>
                                 <td>{reader.consentGiven ? (
                                     <div className="w-5 flex justify-center items-center aspect-square rounded-full  mr-2 bg-green-500">
                                         <IoCheckmarkOutline size={16} color="white" />
@@ -51,7 +52,22 @@ export default function ReadersTab({ readers }: { readers: HomeResponseData["rea
                                     </div>
                                 )}</td>
                                 <td>
-                                    <p>TODO</p>
+                                    <button
+                                        className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                                        onClick={async () => {
+                                            const response = await fetch(`/api/readers/${reader.id}`, {
+                                                method: "DELETE"
+                                            });
+
+                                            if (response.ok) {
+                                                window.location.reload();
+                                            } else {
+                                                alert("Erreur lors de la suppression du lecteur");
+                                            }
+                                        }}
+                                    >
+                                        <MdDeleteOutline size={25} />
+                                    </button>
                                 </td>
                             </tr>
                         ))}

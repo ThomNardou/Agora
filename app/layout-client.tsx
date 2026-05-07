@@ -12,7 +12,7 @@ export default function RootLayoutClient({
     geistMono: { variable: string };
 }>) {
     const pathname = usePathname();
-    const layoutPaths = ["/login", "/", "unsubscribe"];
+    const layoutPaths = ["/login", "/", "/unsubscribe", "/privacyPolicy"];
 
     const shouldHideLayout = layoutPaths.includes(pathname);
 

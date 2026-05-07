@@ -77,7 +77,7 @@ export async function POST(request: Request) {
         if (readerIds && Array.isArray(readerIds)) {
             const connectReaders = readerIds.map((readerId: number) => ({
                 reader_fk: readerId,
-                newsLetter_fk: id,
+                newsLetter_fk: newsletterId,
             }));
             await prisma.t_newsLetters_readers.createMany({
                 data: connectReaders,

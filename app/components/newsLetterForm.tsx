@@ -140,20 +140,22 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                                 sx={{ width: "300px", marginBottom: "20px" }}
                                 onInput={(e) => {
                                     const value = (e.target as HTMLInputElement).value.toLowerCase();
+                                    const filteredReaders = readers.filter(reader => reader.email.toLowerCase().includes(value));
+                                    setReaders(filteredReaders);
                                 }}
                             />
                         </div>
                         <Table sx={{ width: '100%' }}>
                             <thead>
                                 <tr>
-                                    <th></th>
-                                    <th>N°</th>
+                                    <th style={{width: '5%'}}></th>
+                                    <th style={{width: '10%'}}>N°</th>
                                     <th>Email</th>
                                     <th>Consentement</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {readers.map(reader => (
+                                {readers.filter(reader => reader.consentGiven).map(reader => (
                                     <tr key={reader.reader_id}>
                                         <td>
                                             <Checkbox size="sm" onChange={(e) => {
@@ -165,7 +167,7 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                                             }} checked={selectedReaders.includes(reader.reader_id)} />
                                         </td>
                                         <td>{reader.reader_id}</td>
-                                        <td>{reader.email}</td>
+                                        <td title={reader.email}>{reader.email.slice(0, 30)}{reader.email.length > 30 ? "..." : ""}</td>
                                         <td>{reader.consentGiven ? (
                                             <div className="w-5 flex justify-center items-center aspect-square rounded-full  mr-2 bg-green-500">
                                                 <IoCheckmarkOutline size={16} color="white" />
@@ -179,8 +181,8 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                                 ))}
                             </tbody>
                         </Table>
-                        <Button disabled={selectedReaders.length === 0} fullWidth color="primary" sx={{ marginTop: '30px' }} onClick={() => {
-                            fetch("/api/newsletters/save", {
+                        <Button disabled={selectedReaders.length === 0} fullWidth color="primary" sx={{ marginTop: '30px' }} onClick={async () => {
+                            const response = await fetch("/api/newsletters/save", {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json"                                },
@@ -193,6 +195,19 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                                     sendAt
                                 })
                             });
+
+                            if (response.ok) {
+                                setFeedback({
+                                    type: "success",
+                                    message: `Campagne ${nlStatus === "IN_PROGRESS" ? "envoyée" : "planifiée"} avec succès.`
+                                });
+                            }
+                            else {
+                                setFeedback({
+                                    type: "error",
+                                    message: `Une erreur est survenue lors de ${nlStatus === "IN_PROGRESS" ? "l'envoi" : "la planification"} de la campagne.`
+                                });
+                            }
                             onCloseReaderModal();
                             setSendAt(null);
                         }}>

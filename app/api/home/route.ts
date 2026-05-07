@@ -13,6 +13,8 @@ export default interface HomeResponseData {
         id: number;
         name: string;
         sendAt: Date | null;
+        nbrClicks?: number;
+        nbrOpens?: number;
         status: {
             displayName: string;
             textColor: string;
@@ -53,8 +55,11 @@ export async function GET() {
         return sendAt >= oneWeekAgo && sendAt <= now;
     })).length;
 
-    const mailsOpened = await prisma.t_emails_opened.count();
-    const clickRate = await prisma.t_emails_clicked.count();
+    const allEmailsOpened = await prisma.t_emails_opened.findMany();
+    const allEmailsClicked = await prisma.t_emails_clicked.findMany();
+
+    const mailsOpened = allEmailsOpened.length;
+    const clickRate = allEmailsClicked.length;
     const subscribedReaders = readers.filter(r => r.consentGiven).length;
     const unsubscribedReaders = readers.filter(r => !r.consentGiven).length;
     const mailsError = newsletters.filter(n => n.newsLetter_status.status === "FAILED").length;
@@ -70,6 +75,8 @@ export async function GET() {
             id: n.newsLetter_id,
             name: n.name,
             sendAt: n.sendAt ? new Date(n.sendAt) : null,
+            nbrClicks: allEmailsClicked.filter(c => c.newsLetter_fk === n.newsLetter_id).length,
+            nbrOpens: allEmailsOpened.filter(o => o.newsLetter_fk === n.newsLetter_id).length,
             status: {
                 displayName: n.newsLetter_status.displayName,
                 textColor: n.newsLetter_status.textColor,

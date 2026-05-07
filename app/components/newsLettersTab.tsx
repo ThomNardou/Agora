@@ -4,8 +4,7 @@ import { MdSearch } from "react-icons/md";
 import Link from "next/link";
 import { LuPen } from "react-icons/lu";
 import { IoEyeOutline } from "react-icons/io5";
-
-
+import { MdDeleteOutline } from "react-icons/md";
 
 export default function NewsLettersTab({ newsletters }: { newsletters: HomeResponseData["newsletters"] }) {
     return (
@@ -35,6 +34,7 @@ export default function NewsLettersTab({ newsletters }: { newsletters: HomeRespo
                             <th>Nom</th>
                             <th>Date d'envoi</th>
                             <th>Status</th>
+                            <th>Statistiques</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -57,11 +57,41 @@ export default function NewsLettersTab({ newsletters }: { newsletters: HomeRespo
                                     </span>
                                 </td>
                                 <td>
+                                    {newsletter.nbrOpens != null && newsletter.nbrClicks != null ? (
+                                        <div className="flex flex-col">
+                                            <span>{newsletter.nbrOpens} ouvertures</span>
+                                            <span>{newsletter.nbrClicks} clics</span>
+                                        </div>
+                                    ) : (
+                                        "-"
+                                    )}
+                                </td>
+                                <td>
                                     <div className="flex items-center gap-2">
                                         <Link href={`/newsletter/${newsletter.id}`} 
                                             className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
                                             <IoEyeOutline size={20} />
                                         </Link>
+                                        {
+                                            newsletter.status.value === "DRAFT" || newsletter.status.value === "SCHEDULED" ? (
+                                                <button
+                                                    className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                                                    onClick={async () => {
+                                                        const response = await fetch(`/api/newsletters/${newsletter.id}`, {
+                                                            method: "DELETE"
+                                                        });
+
+                                                        if (response.ok) {
+                                                            window.location.reload();
+                                                        } else {
+                                                            alert("Erreur lors de la suppression de la newsletter");
+                                                        }
+                                                    }}
+                                                >
+                                                    <MdDeleteOutline size={25} />
+                                                </button>
+                                            ) : null
+                                        }
                                         {
                                             newsletter.status.value === "DRAFT" && (
                                                 <Link
