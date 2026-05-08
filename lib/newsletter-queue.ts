@@ -32,7 +32,7 @@ async function tick() {
     }
 }
 
-async function processBatch() {
+export async function processBatch() {
     const unsent = await prisma.t_newsLetters_readers.findMany({
         where: {
             sentAt: null,
@@ -166,7 +166,7 @@ async function markFailed(id: number, failureCount: number) {
     console.log(`[newsletter-queue] #${id} → FAILED (${failureCount} unsent readers)`);
 }
 
-async function sendEmail(
+export async function sendEmail(
     to: string,
     subject: string,
     bodyHtml: string,

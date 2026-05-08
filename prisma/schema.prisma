@@ -82,14 +82,14 @@ model t_sessions {
 
 model t_emails_opened {
   email_opened_id Int @id @default(autoincrement())
-  newsLetter_fk Int?
+  newsLetter_fk Int
   openedAt DateTime @default(now())
   newsLetter t_newsLetters? @relation(fields: [newsLetter_fk], references: [newsLetter_id])
 }
 
 model t_emails_clicked {
   email_clicked_id Int @id @default(autoincrement())
-  newsLetter_fk Int?
+  newsLetter_fk Int
   clickedAt DateTime @default(now())
   newsLetter t_newsLetters? @relation(fields: [newsLetter_fk], references: [newsLetter_id])
 }

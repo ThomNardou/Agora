@@ -24,6 +24,7 @@ export async function POST(request: Request) {
             );
         }
 
+
         // Revoke consent and invalidate the token by generating a new one
         await prisma.t_readers.update({
             where: { unsubscribeToken: token },
@@ -32,6 +33,10 @@ export async function POST(request: Request) {
                 consentGiven: false,
                 unsubscribeToken: null,
             },
+        });
+
+        await prisma.t_newsLetters_readers.deleteMany({
+            where: { reader_fk: reader.reader_id },
         });
 
         return NextResponse.json(
