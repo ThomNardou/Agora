@@ -361,7 +361,15 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                         color="primary"
                         disabled={!name || !markdownContent}
                         startDecorator={<LuSend size={20} />}
-                        onClick={() => {setOpenReaderModal(true); setSendAt(new Date().toISOString().slice(0, 16)); setNLStatus("IN_PROGRESS");}}
+                        onClick={() => {
+                            setOpenReaderModal(true); 
+                            const date = new Date();
+                            const sendAtDate = new Date(date.getTime() + 5 * 60 * 1000); 
+                            const localDate = new Date(sendAtDate.getTime() - sendAtDate.getTimezoneOffset() * 60000);
+
+                            setSendAt(localDate.toISOString().slice(0, 16)); 
+                            setNLStatus("SCHEDULED");
+                        }}
                     >
                         Envoyer
                     </Button>
