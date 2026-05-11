@@ -131,7 +131,7 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
             <Modal open={openReaderModal} onClose={onCloseReaderModal}>
                 <ModalDialog>
                     <ModalClose variant="plain" sx={{ m: 1 }} />
-                    <Typography sx={{ mb: 2 }}>Envoyer à :</Typography>
+                    <Typography sx={{ mb: 2, fontSize: '1.25rem' }}>Envoyer à :</Typography>
                     <div className="flex flex-col min-w-xl">
                         <div className="w-full flex justify-end">
                             <Input
@@ -140,8 +140,15 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                                 sx={{ width: "300px", marginBottom: "20px" }}
                                 onInput={(e) => {
                                     const value = (e.target as HTMLInputElement).value.toLowerCase();
-                                    const filteredReaders = readers.filter(reader => reader.email.toLowerCase().includes(value));
-                                    setReaders(filteredReaders);
+                                    const rows = document.querySelectorAll("tbody tr");
+                                    rows.forEach(row => {
+                                        const email = row.children[2].textContent?.toLowerCase() || "";
+                                        if (email.includes(value)) {
+                                            (row as HTMLElement).style.display = "";
+                                        } else {
+                                            (row as HTMLElement).style.display = "none";
+                                        }
+                                    });
                                 }}
                             />
                         </div>

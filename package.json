@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:https": "next dev --experimental-https",
+    "dev:seed": "npm run seed && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

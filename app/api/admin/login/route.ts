@@ -122,7 +122,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const token = jwt.sign({ userId: admin.admin_id }, secretKey, {
+        const token = jwt.sign({ adminId: admin.admin_id }, secretKey, {
             expiresIn,
         });
 
