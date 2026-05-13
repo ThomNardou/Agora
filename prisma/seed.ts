@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import prisma from "../lib/prisma";
 import bcrypt from "bcrypt";
 
@@ -91,27 +92,27 @@ async function main() {
     {
       email: "jean.dupont@example.com",
       consentGiven: true,
-      unsubscribeToken: "token_jean_dupont_123abc",
+      unsubscribeToken: randomBytes(32).toString("hex")
     },
     {
       email: "marie.martin@example.com",
       consentGiven: true,
-      unsubscribeToken: "token_marie_martin_456def",
+      unsubscribeToken: randomBytes(32).toString("hex"),
     },
     {
-      email: "thomas.nardou@eduvaud.ch",
+      email: "thomas@eduvaud.ch",
       consentGiven: true,
-      unsubscribeToken: "token_pierre_bernard_789ghi",
+      unsubscribeToken: randomBytes(32).toString("hex"),
     },
     {
       email: "claire.rousseau@example.com",
       consentGiven: true,
-      unsubscribeToken: "token_claire_rousseau_012jkl",
+      unsubscribeToken: randomBytes(32).toString("hex"),
     },
     {
       email: "thomas.lefebvre@example.com",
       consentGiven: true,
-      unsubscribeToken: "token_thomas_lefebvre_345mno",
+      unsubscribeToken: randomBytes(32).toString("hex"),
     },
   ];
 

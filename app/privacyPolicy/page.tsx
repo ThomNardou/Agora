@@ -47,7 +47,7 @@ export default function PrivacyPolicy() {
               <tr>
                 <td className="border border-gray-200 px-4 py-2">Données de tracking (ouvertures, clics, URLs)</td>
                 <td className="border border-gray-200 px-4 py-2 text-green-600 font-medium">Interne</td>
-                <td className="border border-gray-200 px-4 py-2">Non-anonymisées, accessibles aux admins</td>
+                <td className="border border-gray-200 px-4 py-2">Anonymisées, accessibles aux admins</td>
               </tr>
               <tr>
                 <td className="border border-gray-200 px-4 py-2">Statut d'abonnement (actif / inactif)</td>
