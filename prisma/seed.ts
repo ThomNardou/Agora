@@ -100,7 +100,7 @@ async function main() {
       unsubscribeToken: randomBytes(32).toString("hex"),
     },
     {
-      email: "thomas@eduvaud.ch",
+      email: "thomas.nardou@eduvaud.ch",
       consentGiven: true,
       unsubscribeToken: randomBytes(32).toString("hex"),
     },
