@@ -5,6 +5,7 @@ import Link from "next/link";
 import { LuPen } from "react-icons/lu";
 import { IoEyeOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
+import { VscDebugRestart } from "react-icons/vsc";
 
 export default function NewsLettersTab({ newsletters }: { newsletters: HomeResponseData["newsletters"] }) {
     return (
@@ -100,6 +101,26 @@ export default function NewsLettersTab({ newsletters }: { newsletters: HomeRespo
                                                 >
                                                     <LuPen size={25} />
                                                 </Link>
+                                            )
+                                        }
+                                        {
+                                            newsletter.status.value === "FAILED" && (
+                                                <button
+                                                    className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                                                    onClick={async () => {
+                                                        const response = await fetch(`/api/newsletters/${newsletter.id}/retry`, {
+                                                            method: "PUT"
+                                                        });
+
+                                                        if (response.ok) {
+                                                            window.location.reload();
+                                                        } else {
+                                                            alert("Erreur lors de la reprogrammation de la newsletter");
+                                                        }
+                                                    }}
+                                                >
+                                                    <VscDebugRestart size={25} />
+                                                </button>
                                             )
                                         }
                                     </div>
