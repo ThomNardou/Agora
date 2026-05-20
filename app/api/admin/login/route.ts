@@ -32,12 +32,12 @@ export async function GET() {
         include: { admin: true },
     });
 
-    if (!session || new Date(session.expiresAt) < new Date()) {
-        console.log("Session not found or expired");
+    if (!session) {
+        console.log("Session not found");
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const tokenMatches = await bcrypt.compare(sessionJson.token, session.token);
+    const tokenMatches = await bcrypt.compare(sessionJson.token, session!.token);
 
     if (!tokenMatches) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -50,7 +50,7 @@ export async function GET() {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const admin = session.admin;
+    const admin = session!.admin;
 
     if (!admin) {
         console.log("Admin not found for session");
@@ -133,7 +133,6 @@ export async function POST(request: Request) {
         await prisma.t_sessions.create({
             data: {
                 token: tokenHash,
-                expiresAt: expiresAt,
                 admin: { connect: { admin_id: admin.admin_id } },
             },
         });

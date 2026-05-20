@@ -74,18 +74,6 @@ async function main() {
   );
   console.log(`✅ ${createdAdmins.length} admins created\n`);
 
-  // ===== CRÉER UNE SESSION DE TEST =====
-  console.log("🔐 Creating a test session...");
-  const sessionTokenHash = await bcrypt.hash("seed-session-token", 10);
-  await prisma.t_sessions.create({
-    data: {
-      token: sessionTokenHash,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      admin: { connect: { admin_id: createdAdmins[0].admin_id } },
-    },
-  });
-  console.log("✅ 1 session created\n");
-
   // ===== CRÉER LES LECTEURS =====
   console.log("👥 Creating readers...");
   const readers = [
