@@ -9,10 +9,10 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    console.log(`${request.nextUrl.origin}/api/admin/login`)
+    console.log(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/login`)
 
     const response = await fetch(
-        `${request.nextUrl.origin}/api/admin/login`,
+        `${process.env.NEXT_PUBLIC_APP_URL}/api/admin/login`,
         {
             headers: { Cookie: request.headers.get("cookie") || "" },
         },
