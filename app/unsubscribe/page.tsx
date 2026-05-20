@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Logo from "@/app/components/logo";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { Button } from "@mui/joy";
 
 type Status = "idle" | "loading" | "success" | "error" | "missing";
 
-export default function UnsubscribePage() {
+function UnsubscribeContent() {
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
     const [status, setStatus] = useState<Status>(token ? "idle" : "missing");
@@ -47,11 +47,11 @@ export default function UnsubscribePage() {
                     {status === "idle" && (
                         <>
                             <p className="text-[13px] text-center text-gray-700">
-                                Une fois que vous aurez cliqué sur “Se désabonner”, vous ne recevrez plus nos newsletters.
+                                Une fois que vous aurez cliqué sur "Se désabonner", vous ne recevrez plus nos newsletters.
 
                                 <br />
                                 <br />
-                                Si vous souhaitez vous réabonner ultérieurement, il vous suffira de vous inscrire à nouveau via notre formulaire d’abonnement.
+                                Si vous souhaitez vous réabonner ultérieurement, il vous suffira de vous inscrire à nouveau via notre formulaire d'abonnement.
                             </p>
                             <Button
                                 fullWidth
@@ -101,5 +101,21 @@ export default function UnsubscribePage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function UnsubscribePage() {
+    return (
+        <Suspense fallback={
+            <div className="w-full h-screen content-center">
+                <div className="w-1/4 aspect-square mx-auto shadow-lg rounded-lg border border-gray-200">
+                    <div className="w-full px-10 mt-5 flex flex-col gap-4">
+                        <p className="text-gray-500 text-sm text-center">Chargement…</p>
+                    </div>
+                </div>
+            </div>
+        }>
+            <UnsubscribeContent />
+        </Suspense>
     );
 }
