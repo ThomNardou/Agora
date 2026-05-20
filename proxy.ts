@@ -10,7 +10,7 @@ export async function proxy(request: NextRequest) {
     }
 
     const response = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL}/api/admin/login`,
+        new URL("/api/admin/login", request.url),
         {
             headers: { Cookie: request.headers.get("cookie") || "" },
         },
