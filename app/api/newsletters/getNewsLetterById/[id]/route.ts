@@ -9,7 +9,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         ).adminId;
 
         if (!admin) {
-            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+            return NextResponse.redirect(new URL("/login", request.url));
         }
 
         const { id } = await params;

@@ -9,7 +9,8 @@ export async function POST(request: Request) {
         ).adminId;
 
         if (!admin) {
-            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+            return NextResponse
+                .redirect(new URL("/login", request.url));
         }
         const { id, name, body, sendAt, status, readerIds } = await request.json();
 

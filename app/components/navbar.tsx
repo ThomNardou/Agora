@@ -1,6 +1,7 @@
 import Logo from "./logo";
 import Link from "next/link";
 import { FaFolderPlus } from "react-icons/fa";
+import { IoIosStats } from "react-icons/io";
 
 export default function Navbar() {
     return (
@@ -15,6 +16,10 @@ export default function Navbar() {
                 <Link href={"/newsletter/create"} className={"bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors flex items-center"}>
                     <FaFolderPlus size={20} />
                     <span className={"ml-3"}>Campagne</span>
+                </Link>
+                <Link href={"/statistics"} className={"bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors flex items-center"}>
+                    <IoIosStats size={20} />
+                    <span className={"ml-3"}>Statistiques</span>
                 </Link>
             </div>
         </nav>

@@ -30,13 +30,13 @@ export default interface HomeResponseData {
 
 }
 
-export async function GET() {
+export async function GET({ request }: { request: Request }) {
     const admin = JSON.parse(
         (await cookies()).get("session")?.value || "{}",
     ).adminId;
 
     if (!admin) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        return NextResponse.redirect(new URL("/login", request.url));
     }
 
     const newsletters = await prisma.t_newsLetters.findMany({

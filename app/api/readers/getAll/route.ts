@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
-export async function GET() {
+export async function GET({ request }: { request: Request }) {
     try {
         const admin = JSON.parse(
             (await cookies()).get("session")?.value || "{}",
         ).adminId;
 
         if (!admin) {
-            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+            return NextResponse.redirect(new URL("/login", request.url));
         }
 
         const readers = await prisma.t_readers.findMany({
