@@ -11,6 +11,8 @@ const BATCH_SIZE = parseInt(process.env.NEWSLETTER_BATCH_SIZE ?? "20", 10);
 const INTERVAL_MS = parseInt(process.env.NEWSLETTER_INTERVAL_MS ?? "60000", 10);
 const MAX_FAILURES = parseInt(process.env.NEWSLETTER_MAX_FAILURES ?? "5", 10);
 
+const mailSentFailed = new Map<number, number>(); // newsletterId → count d'échecs
+
 let isRunning = false;
 
 export function startNewsletterQueue() {
@@ -54,6 +56,8 @@ export async function processBatch() {
         take: BATCH_SIZE,
     });
 
+    const nlIds = unsent.map((u) => u.newsLetter_fk);
+
     if (unsent.length === 0) return;
 
   
@@ -73,6 +77,9 @@ export async function processBatch() {
             where: { newsLetter_id: { in: Array.from(scheduledNewsletters) } },
             data: { newsLetter_status_fk: inProgress.status_id },
         });
+
+
+
         scheduledNewsletters.forEach((nlId) => {
             const nl = unsent.find((u) => u.newsLetter_fk === nlId)?.newsLetter;
             if (nl) console.log(`[newsletter-queue] #${nlId} "${nl.name}" → IN_PROGRESS`);
@@ -141,23 +148,25 @@ export async function processBatch() {
             }).catch((err) => {
                 console.error(`[newsletter-queue] failed to mark entry as failed for newsletter #${entry.newsLetter_fk} and reader #${entry.reader_fk}:`, err);
             });
-            console.error(`[newsletter-queue] failed to send newsletter #${entry.newsLetter_fk} to reader #${entry.reader_fk}:`, result.reason);
+            mailSentFailed.set(entry.newsLetter_fk, (mailSentFailed.get(entry.newsLetter_fk) ?? 0) + 1);
+            console.error(`[newsletter-queue] failed to send newsletter #${entry.newsLetter_fk} to reader #${entry.reader_fk}`);
         }
     });
 
-    // Vérifie seulement si c'est le dernier batch (moins de BATCH_SIZE readers)
-    if (unsent.length < BATCH_SIZE) {
-        const processedNewsletterIds = new Set(unsent.map((u) => u.newsLetter_fk));
-        for (const nlId of processedNewsletterIds) {
-            const remaining = await prisma.t_newsLetters_readers.count({
-                where: { newsLetter_fk: nlId, sentAt: null },
-            });
-            if (remaining === 0) {
-                await markCompleted(nlId);
-            } else if (remaining >= MAX_FAILURES) {
-                await markFailed(nlId, remaining);
-            }
+    const processedNewsletterIds = new Set(unsent.map((u) => u.newsLetter_fk));
+    for (const nlId of processedNewsletterIds) {
+        const remaining = await prisma.t_newsLetters_readers.count({
+            where: { newsLetter_fk: nlId, sentAt: null },
+        });
+
+        if (mailSentFailed.has(nlId) && mailSentFailed.get(nlId)! >= MAX_FAILURES) {
+            await markFailed(nlId, mailSentFailed.get(nlId) ?? 0);
+            mailSentFailed.delete(nlId);
         }
+
+        if (remaining === 0) {
+            await markCompleted(nlId);
+        } 
     }
 }
 
