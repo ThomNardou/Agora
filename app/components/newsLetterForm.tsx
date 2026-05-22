@@ -22,6 +22,7 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
 
     const editorRef = useRef<HTMLTextAreaElement>(null);
     const sendAttInputRef = useRef<HTMLInputElement>(null);
+    const detailsToggleRef = useRef<HTMLDetailsElement>(null);
 
     const [markdownContent, setMarkdownContent] = useState("");
     const [name, setName] = useState("");
@@ -274,7 +275,7 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                     >
                         U
                     </Button>
-                    <details className="relative">
+                    <details className="relative" ref={detailsToggleRef}>
                         <summary className="cursor-pointer text-[#0B6BCB] text-sm select-none hover:bg-[#E3EFFB] px-2 py-1 rounded">
                             Aa
                         </summary>
@@ -283,7 +284,10 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                                 variant="plain"
                                 title="Titre 1"
                                 className="text-lg font-bold w-full justify-start"
-                                onClick={() => applyTextFormat("h1")}
+                                onClick={(e) => {
+                                    detailsToggleRef.current?.removeAttribute("open");
+                                    applyTextFormat("h1")
+                                }}
                             >
                                 <span className="text-xl font-bold">Titre 1</span>
                             </Button>
@@ -291,7 +295,10 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                                 variant="plain"
                                 title="Titre 2"
                                 className="text-md font-bold w-full justify-start"
-                                onClick={() => applyTextFormat("h2")}
+                                onClick={(e) => {
+                                    detailsToggleRef.current?.removeAttribute("open");
+                                    applyTextFormat("h2")
+                                }}
                             >
                                 <span className="text-lg font-bold">Titre 2</span>
                             </Button>
@@ -299,7 +306,10 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                                 variant="plain"
                                 title="Titre 3"
                                 className="text-sm font-bold w-full justify-start"
-                                onClick={() => applyTextFormat("h3")}
+                                onClick={(e) => {
+                                    detailsToggleRef.current?.removeAttribute("open");
+                                    applyTextFormat("h3")
+                                }}
                             >
                                 <span className="text-md font-bold">Titre 3</span>
                             </Button>
@@ -362,7 +372,7 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                         startDecorator={<LuPen size={20} />}
                         onClick={() => {setOpenPlanModal(true); setNLStatus("SCHEDULED");}}
                     >
-                        Planifier
+                        Planifier l'envoi
                     </Button>
                     <Button
                         color="primary"

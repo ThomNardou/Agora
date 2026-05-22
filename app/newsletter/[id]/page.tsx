@@ -8,14 +8,15 @@ import { LuPen } from "react-icons/lu";
 import { Input } from "@mui/joy";
 import { IoCodeSlash } from "react-icons/io5";
 import { CiPlay1 } from "react-icons/ci";
+import Link from "next/link";
+import { IoEyeOutline } from "react-icons/io5";
+import { MdDeleteOutline } from "react-icons/md";
+import { VscDebugRestart } from "react-icons/vsc";
 
 marked.setOptions({
     breaks: true,
     gfm: true
 });
-
-
-
 
 
 export default function NewsletterDetailsPage() {
@@ -25,6 +26,7 @@ export default function NewsletterDetailsPage() {
         id: number;
         name: string;
         body: string;
+        status: string;
     } | null>(null);
     const [viewMode, setViewMode] = useState<"preview" | "code">("preview");
     const [htmlContent, setHtmlContent] = useState("");
@@ -35,10 +37,12 @@ export default function NewsletterDetailsPage() {
                 const response = await fetch(`/api/newsletters/getNewsLetterById/${id}`);
                 if (response.ok) {
                     const data = await response.json();
+                    console.log(data);
                     setNewsletter({
                         id: data.newsletter.newsLetter_id,
                         name: data.newsletter.name,
                         body: data.newsletter.body,
+                        status: data.newsletter.newsLetter_status.status,
                     });
 
                     const rawHtml = await marked(data.newsletter.body);
@@ -57,6 +61,9 @@ export default function NewsletterDetailsPage() {
     return (
         <div className="w-4/5 mx-auto">
             <h1 className="text-2xl text-gray-500 mb-4">Détails de la campagne</h1>
+
+            
+
             <Input placeholder="Nom" fullWidth disabled startDecorator={
                 <LuPen size={20} />
             }
@@ -89,6 +96,62 @@ export default function NewsletterDetailsPage() {
                     </div>
                 )
             }
+
+            <div className="flex items-center gap-4 mt-4">
+                {
+                    newsletter?.status === "DRAFT" || newsletter?.status === "SCHEDULED" ? (
+                        <button
+                            className="flex h-8 gap-2 items-center justify-center rounded-md border border-red-600 bg-red-100 text-red-700 hover:bg-red-200 transition-colors px-2 py-1"
+                            onClick={async () => {
+                                const response = await fetch(`/api/newsletters/${newsletter?.id}`, {
+                                    method: "DELETE"
+                                });
+
+                                if (response.ok) {
+                                    window.location.reload();
+                                } else {
+                                    alert("Erreur lors de la suppression de la newsletter");
+                                }
+                            }}
+                        >
+                            <MdDeleteOutline size={25} />
+                            Supprimer
+                        </button>
+                    ) : null
+                }
+                {
+                    newsletter?.status === "DRAFT" && (
+                        <Link
+                            href={`/newsletter/edit/${newsletter?.id}`}
+                            className="flex h-8 gap-2 items-center justify-center rounded-md border border-yellow-600 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition-colors px-2 py-1"
+                        >
+                            <LuPen size={20} />
+                            Modifier
+                        </Link>
+                    )
+                }
+                {
+                    newsletter?.status === "FAILED" && (
+                        <button
+                            className="flex h-8 gap-2 items-center justify-center rounded-md border border-orange-600 bg-orange-100 text-orange-700 hover:bg-orange-200 transition-colors px-2 py-1"
+                            onClick={async () => {
+                                const response = await fetch(`/api/newsletters/${newsletter?.id}/retry`, {
+                                    method: "PUT"
+                                });
+
+                                if (response.ok) {
+                                    window.location.reload();
+                                } else {
+                                    alert("Erreur lors de la reprogrammation de la newsletter");
+                                }
+                            }}
+                        >
+                            <VscDebugRestart size={25} />
+                            Réessayer 
+                        </button>
+                    )
+                }
+            </div>
         </div>
     )
 }

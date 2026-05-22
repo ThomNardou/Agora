@@ -1,11 +1,7 @@
 import { Table, Input } from "@mui/joy";
 import HomeResponseData from "../api/home/route";
 import { MdSearch } from "react-icons/md";
-import Link from "next/link";
-import { LuPen } from "react-icons/lu";
-import { IoEyeOutline } from "react-icons/io5";
-import { MdDeleteOutline } from "react-icons/md";
-import { VscDebugRestart } from "react-icons/vsc";
+
 
 export default function NewsLettersTab({ newsletters }: { newsletters: HomeResponseData["newsletters"] }) {
     return (
@@ -28,7 +24,7 @@ export default function NewsLettersTab({ newsletters }: { newsletters: HomeRespo
                         });
                     }}
                 />
-                <Table sx={{ width: '100%' }}>
+                <Table hoverRow sx={{ width: '100%' }}>
                     <thead>
                         <tr>
                             <th>N°</th>
@@ -36,12 +32,13 @@ export default function NewsLettersTab({ newsletters }: { newsletters: HomeRespo
                             <th>Date d'envoi</th>
                             <th>Status</th>
                             <th>Statistiques</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {newsletters.map((newsletter) => (
-                            <tr key={newsletter.id}>
+                            <tr key={newsletter.id}  onClick={() => {
+                                window.location.href = `/newsletter/${newsletter.id}`;
+                            }}>
                                 <td>{newsletter.id}</td>
                                 <td>{newsletter.name}</td>
                                 <td>{newsletter.sendAt != null ? (new Date(newsletter.sendAt).toLocaleDateString() + " " + new Date(newsletter.sendAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })) : "-"}</td>
@@ -66,64 +63,6 @@ export default function NewsLettersTab({ newsletters }: { newsletters: HomeRespo
                                     ) : (
                                         "-"
                                     )}
-                                </td>
-                                <td>
-                                    <div className="flex items-center gap-2">
-                                        <Link href={`/newsletter/${newsletter.id}`} 
-                                            className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
-                                            <IoEyeOutline size={20} />
-                                        </Link>
-                                        {
-                                            newsletter.status.value === "DRAFT" || newsletter.status.value === "SCHEDULED" ? (
-                                                <button
-                                                    className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-                                                    onClick={async () => {
-                                                        const response = await fetch(`/api/newsletters/${newsletter.id}`, {
-                                                            method: "DELETE"
-                                                        });
-
-                                                        if (response.ok) {
-                                                            window.location.reload();
-                                                        } else {
-                                                            alert("Erreur lors de la suppression de la newsletter");
-                                                        }
-                                                    }}
-                                                >
-                                                    <MdDeleteOutline size={25} />
-                                                </button>
-                                            ) : null
-                                        }
-                                        {
-                                            newsletter.status.value === "DRAFT" && (
-                                                <Link
-                                                    href={`/newsletter/edit/${newsletter.id}`}
-                                                    className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-                                                >
-                                                    <LuPen size={25} />
-                                                </Link>
-                                            )
-                                        }
-                                        {
-                                            newsletter.status.value === "FAILED" && (
-                                                <button
-                                                    className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-600 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-                                                    onClick={async () => {
-                                                        const response = await fetch(`/api/newsletters/${newsletter.id}/retry`, {
-                                                            method: "PUT"
-                                                        });
-
-                                                        if (response.ok) {
-                                                            window.location.reload();
-                                                        } else {
-                                                            alert("Erreur lors de la reprogrammation de la newsletter");
-                                                        }
-                                                    }}
-                                                >
-                                                    <VscDebugRestart size={25} />
-                                                </button>
-                                            )
-                                        }
-                                    </div>
                                 </td>
                             </tr>
                         ))}

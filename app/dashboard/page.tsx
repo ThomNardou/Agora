@@ -38,7 +38,7 @@ export default function DashboardPage() {
             <div className="w-4/5 mx-auto">
                 <div className="w-full flex flex-wrap gap-4">
                     {[
-                        { value: stats?.newsLettersThisWeek ?? "0", label: "Envoies cette semaine" },
+                        { value: stats?.newsLettersThisWeek ?? "0", label: "Envois cette semaine" },
                         { value: stats?.mailsOpened ?? "0", label: "Ouvertures de mail" },
                         { value: stats?.clickRate ?? "0", label: "Clics de lien" },
                         { value: stats?.subscribedReaders ?? "0", label: "Inscriptions" },

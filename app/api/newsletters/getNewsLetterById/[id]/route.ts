@@ -17,6 +17,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         const newsletter = await prisma.t_newsLetters.findUnique({
             where: {
                 newsLetter_id: parseInt(id)
+            },
+            include: {
+                newsLetter_status: true,
             }
         });
 
