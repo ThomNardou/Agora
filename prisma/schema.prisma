@@ -65,6 +65,7 @@ model t_newsLetters_readers {
   newsLetter_fk Int
   reader_fk Int
   sentAt DateTime?
+  failedAt DateTime?
   newsLetter t_newsLetters @relation(fields: [newsLetter_fk], references: [newsLetter_id])
   reader t_readers @relation(fields: [reader_fk], references: [reader_id])
   @@id([newsLetter_fk, reader_fk])

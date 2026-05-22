@@ -131,7 +131,7 @@ Agora est une plateforme moderne de gestion de newsletters.
 > "Agora nous a permis de doubler notre engagement!" - Un utilisateur heureux
 
 [Découvrir plus](https://www.etml.ch/)`,
-      sendAt: new Date(now + 2 * min),
+      sendAt: new Date(now + 1 * min),
       newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
     {
@@ -155,7 +155,7 @@ Date: 15/05/2026
 Heure: 14h00
 Lien: https://www.etml.ch/
 \`\`\``,
-      sendAt: new Date(now + 4 * min),
+      sendAt: new Date(now + 2 * min),
       newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
     {
@@ -179,7 +179,7 @@ Utilisez le code **MAI2026** pour profiter de 20% de réduction sur tous les pla
 ---
 
 *Dernière mise à jour: 29 avril 2026*`,
-      sendAt: new Date(now + 6 * min),
+      sendAt: new Date(now + 3 * min),
       newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
     {
@@ -193,7 +193,7 @@ Ceci est une newsletter en brouillon pour tester le système.
 - [ ] Ajouter les images
 - [ ] Vérifier les liens
 - [ ] Réviser le contenu`,
-      sendAt: new Date(now + 8 * min),
+      sendAt: new Date(now + 4 * min),
       newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
     {
@@ -205,7 +205,7 @@ Tentative d'envoi échouée. Veuillez vérifier les paramètres et réessayer.
 ## Contenu
 
 Ceci était destiné à être envoyé le 1er juin.`,
-      sendAt: new Date(now + 10 * min),
+      sendAt: new Date(now + 5 * min),
       newsLetter_status_fk: createdStatuses[1].status_id, // Planifiée
     },
   ];

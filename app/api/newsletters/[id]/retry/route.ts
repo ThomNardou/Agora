@@ -41,6 +41,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             }
         });
 
+        await prisma.t_newsLetters_readers.updateMany({
+            where: {
+                newsLetter_fk: nlId,
+                failedAt: { not: null }
+            },
+            data: {
+                failedAt: null
+            }
+        });
+
         return NextResponse.json({ message: "Newsletter retry scheduled successfully" });
     } catch (error) {
         console.error("Error scheduling newsletter retry:", error);

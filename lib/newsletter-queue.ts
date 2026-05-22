@@ -36,6 +36,7 @@ export async function processBatch() {
     const unsent = await prisma.t_newsLetters_readers.findMany({
         where: {
             sentAt: null,
+            failedAt: null,
             newsLetter: {
                 sendAt: { lte: new Date(), not: null },
                 newsLetter_status: {
@@ -125,6 +126,24 @@ export async function processBatch() {
         res.filter((r) => r.status === "fulfilled").length
     } sent, ${res.filter((r) => r.status === "rejected").length} failed`
     );
+
+    res.forEach((result, index) => {
+        if (result.status === "rejected") {
+            const entry = unsent[index];
+            prisma.t_newsLetters_readers.update({
+                where: {
+                    newsLetter_fk_reader_fk: {
+                        newsLetter_fk: entry.newsLetter_fk,
+                        reader_fk: entry.reader_fk,
+                    },
+                },
+                data: { failedAt: new Date() },
+            }).catch((err) => {
+                console.error(`[newsletter-queue] failed to mark entry as failed for newsletter #${entry.newsLetter_fk} and reader #${entry.reader_fk}:`, err);
+            });
+            console.error(`[newsletter-queue] failed to send newsletter #${entry.newsLetter_fk} to reader #${entry.reader_fk}:`, result.reason);
+        }
+    });
 
     // Vérifie seulement si c'est le dernier batch (moins de BATCH_SIZE readers)
     if (unsent.length < BATCH_SIZE) {
