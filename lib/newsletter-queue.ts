@@ -127,7 +127,7 @@ export async function processBatch() {
     );
 
     // Vérifie seulement si c'est le dernier batch (moins de BATCH_SIZE readers)
-    if (unsent.length <= BATCH_SIZE) {
+    if (unsent.length < BATCH_SIZE) {
         const processedNewsletterIds = new Set(unsent.map((u) => u.newsLetter_fk));
         for (const nlId of processedNewsletterIds) {
             const remaining = await prisma.t_newsLetters_readers.count({
