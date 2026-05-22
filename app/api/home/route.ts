@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
@@ -30,7 +30,7 @@ export default interface HomeResponseData {
 
 }
 
-export async function GET({ request }: { request: Request }) {
+export async function GET(request: NextRequest) {
     const admin = JSON.parse(
         (await cookies()).get("session")?.value || "{}",
     ).adminId;
