@@ -30,6 +30,12 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
     const [sendAt, setSendAt] = useState<string | null>(null);
     const [openPlanModal, setOpenPlanModal] = useState(false);
     const [openReaderModal, setOpenReaderModal] = useState(false);
+    const getLocalDateTime = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        return now.toISOString().slice(0, 16);
+    };
+    const [currentDateTime, setCurrentDateTime] = useState(getLocalDateTime());
     const [readers, setReaders] = useState<{ reader_id: number; email: string, consentGiven: boolean }[]>([]);
     const [nlStatus, setNLStatus] = useState<"DRAFT" | "IN_PROGRESS" | "SCHEDULED" | null>(null);
     const [feedback, setFeedback] = useState<{
@@ -119,7 +125,7 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                             <label>
                                 Date d'envoi :
                             </label>
-                            <Input slotProps={{ input: { ref: sendAttInputRef, min: new Date().toISOString().slice(0, 16) } }} fullWidth type="datetime-local" className=" border border-gray-300 rounded px-2 py-1" onChange={(e) => setSendAt(e.target.value)} />
+                            <Input value={currentDateTime} slotProps={{ input: { ref: sendAttInputRef, min: getLocalDateTime() } }} fullWidth type="datetime-local" className=" border border-gray-300 rounded px-2 py-1" onChange={(e) => setSendAt(e.target.value)} />
                         </div>
                         <Button disabled={!sendAt || sendAt < new Date().toISOString().slice(0, 16)} color="primary" sx={{ marginTop: '30px' }} onClick={() => { setOpenReaderModal(true); setOpenPlanModal(false); }}>
                             Planifier
@@ -370,7 +376,7 @@ export default function NewsLetterForm({ mode, title, newsletter }: {
                         color="success"
                         disabled={!name || !markdownContent}
                         startDecorator={<LuPen size={20} />}
-                        onClick={() => {setOpenPlanModal(true); setNLStatus("SCHEDULED");}}
+                        onClick={() => {setOpenPlanModal(true); setNLStatus("SCHEDULED"); setCurrentDateTime(getLocalDateTime());}}
                     >
                         Planifier l'envoi
                     </Button>
