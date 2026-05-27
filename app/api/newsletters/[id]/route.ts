@@ -33,13 +33,25 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
             return NextResponse.json({ message: "Unauthorized to delete newsletter with this status" }, { status: 400 });
         }
 
-        if (newsletter.newsLetter_status.status === "IN_PROGRESS_IN_VALIDATION") {
-            const timeSinceUpdate = Date.now() - newsletter.updatedAt.getTime();
-            const thirtySecondsInMs = 30 * 1000;
+        if (newsletter.newsLetter_status.status === "SCHEDULED") {
 
-            if (timeSinceUpdate > thirtySecondsInMs) {
-                return NextResponse.json({ message: "Deletion window expired. Newsletter is now processing." }, { status: 400 });
-            }
+            const cancelledStatus = await prisma.t_newsLetters_status.findFirst({
+                where: {
+                    status: "CANCELLED"
+                }
+            });
+
+            await prisma.t_newsLetters.update({
+                where: {
+                    newsLetter_id: nlId
+                },
+                data: {
+                    newsLetter_status_fk: cancelledStatus?.status_id,
+                    sendAt: null
+                }
+            });
+
+            return NextResponse.json({ message: "Newsletter cancelled successfully" });
         }
 
         await prisma.t_newsLetters_readers.deleteMany({

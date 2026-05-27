@@ -45,6 +45,12 @@ async function main() {
       textColor: "#CC0000",
       backgroundColor: "#FFB3B3",
     },
+    {
+      displayName: "Annulée",
+      status: "CANCELLED",
+      textColor: "#8B0000",
+      backgroundColor: "#FF7F7F",
+    }
   ];
 
   const createdStatuses = await Promise.all(

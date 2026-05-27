@@ -62,7 +62,7 @@ export default function NewsletterDetailsPage() {
         <div className="w-4/5 mx-auto">
             <h1 className="text-2xl text-gray-500 mb-4">Détails de la campagne</h1>
 
-            
+
 
             <Input placeholder="Nom" fullWidth disabled startDecorator={
                 <LuPen size={20} />
@@ -115,7 +115,7 @@ export default function NewsletterDetailsPage() {
                             }}
                         >
                             <MdDeleteOutline size={25} />
-                            Supprimer
+                            {newsletter?.status === "DRAFT" ? "Supprimer" : "Annuler l'envoi"}
                         </button>
                     ) : null
                 }
@@ -131,7 +131,7 @@ export default function NewsletterDetailsPage() {
                     )
                 }
                 {
-                    newsletter?.status === "FAILED" && (
+                    newsletter?.status === "FAILED" || newsletter?.status === "CANCELLED" ? (
                         <button
                             className="flex h-8 gap-2 items-center justify-center rounded-md border border-orange-600 bg-orange-100 text-orange-700 hover:bg-orange-200 transition-colors px-2 py-1"
                             onClick={async () => {
@@ -147,9 +147,9 @@ export default function NewsletterDetailsPage() {
                             }}
                         >
                             <VscDebugRestart size={25} />
-                            Réessayer 
+                            {newsletter?.status === "FAILED" ? "Réessayer" : "Reprogrammer"}
                         </button>
-                    )
+                    ) : null
                 }
             </div>
         </div>
