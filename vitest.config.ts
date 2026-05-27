@@ -5,6 +5,10 @@ export default defineConfig({
     test: {
         environment: "node",
         globals: true,
+        api: {
+            port: 3006,
+            host: "localhost",
+        }
     },
     resolve: {
         alias: {

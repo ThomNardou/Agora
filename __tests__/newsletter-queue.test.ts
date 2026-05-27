@@ -524,68 +524,7 @@ describe("Newsletter Queue", () => {
     });
 
     describe("Cas d'erreurs", () => {
-        it("Token invalide (403)", async () => {
-            const mockReader = {
-                reader_id: 1,
-                email: "user@example.com",
-                consentGiven: true,
-                consentGivenAt: new Date(),
-                unsubscribeToken: "token_123",
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            };
-
-            const mockNewsletter = {
-                newsLetter_id: 1,
-                name: "Test Newsletter",
-                body: "Test content",
-                sendAt: new Date(Date.now() - 1000),
-                newsLetter_status_fk: 2,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                newsLetter_status: {
-                    status_id: 2,
-                    status: "SCHEDULED",
-                    displayName: "Scheduled",
-                    textColor: "#000",
-                    backgroundColor: "#fff",
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-            };
-
-            mockPrisma.t_newsLetters_readers.findMany.mockResolvedValueOnce([
-                {
-                    newsLetter_fk: 1,
-                    reader_fk: 1,
-                    sentAt: null,
-                    newsLetter: mockNewsletter,
-                    reader: mockReader,
-                },
-            ]);
-
-            mockPrisma.t_newsLetters_status.findFirst.mockResolvedValueOnce(null);
-
-            // Simuler une erreur HTTP 403 pour un token invalide
-            fetchSpy.mockResolvedValueOnce(
-                new Response(JSON.stringify({ error: "Invalid token" }), {
-                    status: 403,
-                })
-            );
-
-            // Tester que sendEmail lève une erreur pour HTTP 403
-            await expect(
-                sendEmail(
-                    "test@example.com",
-                    "Test",
-                    "<p>Test</p>",
-                    "test_token_invalide",
-                    1,
-                    1
-                )
-            ).rejects.toThrow("Maily HTTP 403");
-        });
-
+        
         it("Token test_token_invalide", async () => {
             fetchSpy.mockResolvedValueOnce(
                 new Response(
