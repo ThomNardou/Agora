@@ -27,8 +27,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             return NextResponse.json({ message: "Newsletter not found" }, { status: 404 });
         }
 
-        if (newsletter.newsLetter_status.status !== "FAILED") {
-            return NextResponse.json({ message: "Only newsletters with FAILED status can be retried" }, { status: 400 });
+        if (newsletter.newsLetter_status.status !== "FAILED" && newsletter.newsLetter_status.status !== "CANCELLED") {
+            return NextResponse.json({ message: "Only newsletters with FAILED or CANCELLED status can be retried" }, { status: 400 });
         }
 
         await prisma.t_newsLetters.update({
