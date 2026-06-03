@@ -65,13 +65,13 @@ async function main() {
       email: "admin@agora.com",
       name: "Admin",
       lastName: "Agora",
-      password: await bcrypt.hash("admin123", 10),
+      password: await bcrypt.hash("admin123", 12),
     },
     {
       email: "editor@agora.com",
       name: "Editor",
       lastName: "Agora",
-      password: await bcrypt.hash("editor123", 10),
+      password: await bcrypt.hash("editor123", 12),
     },
   ];
 

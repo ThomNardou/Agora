@@ -127,7 +127,7 @@ export async function POST(request: Request) {
         });
 
         const expiresAt = new Date(Date.now() + expiresIn * 1000);
-        const tokenHash = bcrypt.hashSync(token, 10);
+        const tokenHash = bcrypt.hashSync(token, 12);
 
         await prisma.t_sessions.deleteMany({ where: { admin_fk: admin.admin_id } });
         await prisma.t_sessions.create({
