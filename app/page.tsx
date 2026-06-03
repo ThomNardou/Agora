@@ -559,7 +559,7 @@ export default function Home() {
       <section id="produits" className="ag-container ag-section">
         <div className="ag-section-head">
           <h2 className="ag-h2">Notre sélection</h2>
-          <p className="ag-section-lead">
+          <p className="ag-section-lead" style={{margin: '0 auto'}}>
             Des enveloppes pensées pour tous vos besoins, à des prix justes.
           </p>
         </div>
